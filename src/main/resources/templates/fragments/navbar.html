@@ -1,0 +1,24 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="navigation">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="display: flex; align-items: baseline;">
+        <a class="navbar-brand" th:href="@{/}">University Schedule</a>
+        <button type="button" class="navbar-toggler" data-toggle="collapse"
+                data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!--            Collapsing Content-->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <div class="navbar-nav mr-auto">
+                <a class="nav-item nav-link" th:href="@{/schedule}">Schedule</a>
+                <a class="nav-item nav-link" th:href="@{/course}">Course</a>
+                <a class="nav-item nav-link" th:href="@{/lecture}">Lecture</a>
+                <a class="nav-item nav-link" th:href="@{/professor}">Professor</a>
+                <a class="nav-item nav-link" th:href="@{/room}">Room</a>
+                <a class="nav-item nav-link" th:href="@{/student}">Student</a>
+            </div>
+        </div>
+    </nav>
+</div>

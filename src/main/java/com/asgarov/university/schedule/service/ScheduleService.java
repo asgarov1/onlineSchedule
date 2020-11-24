@@ -1,0 +1,64 @@
+package com.asgarov.university.schedule.service;
+
+import com.asgarov.university.schedule.domain.*;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Service
+public class ScheduleService {
+
+    private final CourseService courseService;
+    private final StudentService studentService;
+    private final ProfessorService professorService;
+
+    public ScheduleService(CourseService courseService, StudentService studentService, ProfessorService professorService) {
+        this.courseService = courseService;
+        this.studentService = studentService;
+        this.professorService = professorService;
+    }
+
+    public List<DaySchedule> getPersonsSchedule(Person person) {
+        List<Course> courses = new ArrayList<>();
+        if (person instanceof Student) {
+            Student student = (Student) person;
+            courses = courseService.findStudentsCourses(student);
+        } else if (person instanceof Professor) {
+            Professor professor = (Professor) person;
+            courses = courseService.findProfessorsCourses(professor);
+        }
+
+        Map<LocalDate, List<Lecture>> schedules = courses.stream()
+                .map(Course::getLectures)
+                .flatMap(Collection::stream)
+                .sorted(Comparator.comparing(Lecture::getDateTime))
+                .collect(Collectors.groupingBy(lecture -> lecture.getDateTime().toLocalDate()));
+
+        List<DaySchedule> daySchedules = new ArrayList<>();
+        schedules.forEach((date, lecture) -> {
+            daySchedules.add(new DaySchedule(date, lecture));
+        });
+
+        daySchedules.sort(Comparator.comparing(DaySchedule::getLocalDate));
+
+        return daySchedules;
+    }
+
+    public DaySchedule getTodayScheduleForPerson(final Person person) {
+        List<DaySchedule> daySchedules = getPersonsSchedule(person);
+        return daySchedules.stream()
+                .filter(daySchedule -> daySchedule.getLocalDate().equals(LocalDate.now()))
+                .findAny()
+                .orElseThrow(NoSuchElementException::new);
+    }
+
+    public List<DaySchedule> getSchedule(Person person, LocalDate dateFrom, LocalDate dateTo) {
+        List<DaySchedule> daySchedules = getPersonsSchedule(person);
+        return daySchedules.stream()
+                .filter(daySchedule -> daySchedule.getLocalDate().isAfter(dateFrom))
+                .filter(daySchedule -> daySchedule.getLocalDate().isBefore(dateTo))
+                .collect(Collectors.toList());
+    }
+}

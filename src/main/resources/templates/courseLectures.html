@@ -1,0 +1,47 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:include="layouts/standardLayout :: page(title='Lectures')">
+<div class="container" th:fragment="main">
+    <div class="jumbotron">
+        <h1 th:text="|${course.name} lectures:|"></h1>
+        <hr/>
+        <table class="table table-striped table-hover" th:unless="${#lists.isEmpty(lectures)}">
+            <thead class="thead-dark">
+            <th>id</th>
+            <th>DateTime</th>
+            <th>Room</th>
+            <th>Course Name</th>
+            <th>Action</th>
+            </thead>
+            <tr th:each="lecture: ${lectures}">
+                <td th:text="${lecture.id}">id</td>
+                <td th:text="${lecture.dateTime}">DateTime</td>
+                <td th:text="${lecture.room}">Room</td>
+                <td th:text="${courseService.findByLectureId(__${lecture.id}__).name}">Course Name</td>
+                <td><a href="#" class="text-danger text-decoration-none"
+                       data-toggle="modal"
+                       th:attr="data-target='#confirm-delete-'+${lecture.id}">Delete</a>
+                    <div th:replace="fragments/modals :: removeLectureFromCourseModal"></div>
+                </td>
+            </tr>
+        </table>
+
+        <form th:action="@{/course/__${course.id}__/addLecture/}" method="POST" th:object="${lectureDTO}">
+            <div class="row form-group">
+                <div class='col-sm-4 input-group date'>
+                    <input type='date' class="form-control" name="lectureDate" required th:field="*{date}"/>
+                    <input type='time' value="13:00" class="form-control" name="lectureTime" required
+                           th:field="*{time}"/>
+                </div>
+                <div class="col-sm-4">
+                    <select required class="form-control" name="roomId" th:field="*{roomId}">
+                        <option th:each="room: ${rooms}" th:text="${room}"
+                                th:value="${room.id}">
+                        </option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <button type="submit" class="btn btn-success btn-ok">Add Lecture</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

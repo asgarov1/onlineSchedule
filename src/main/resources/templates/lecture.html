@@ -1,0 +1,19 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:include="layouts/standardLayout :: page(title='Lecture')">
+<div class="container" th:fragment="main">
+    <div class="jumbotron">
+        <h1>Lecture Operations:</h1>
+        <hr/>
+        <div class="form-row">
+            <form method="get" th:action="@{/lecture/searchLecturesById/}">
+                <div class="form-group input-group col-sm-10">
+                    <input type="text" name="id" class="form-control" placeholder="enter the id" required>
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="submit">Search By Id</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div th:replace="fragments/lecturesTable :: lectures"></div>
+    </div>
+</div>

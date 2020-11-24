@@ -1,0 +1,45 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:include="layouts/standardLayout :: page(title='Course')">
+<div class="container" th:fragment="main">
+    <div class="jumbotron">
+        <h1>Course Operations:</h1>
+        <hr/>
+        <div class="form-row">
+            <form method="get" th:action="@{/course/searchCoursesById/}">
+                <div class="form-group input-group col-sm-10">
+                    <input type="text" name="id" class="form-control" placeholder="enter the id" required>
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="submit">Search By Id</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div th:replace="fragments/coursesTable :: courses"></div>
+
+        <div class="container border border-dark rounded text-center">
+            <h4 th:class="mt-3">Create new course</h4>
+            <form th:action="@{/course}" method="POST">
+                <div class="row form-inline d-flex justify-content-center">
+                    <div class="input-group m-3">
+                        <input type="text" class="form-control" name="name" placeholder="Name of the course"
+                               required>
+                    </div>
+                    <div class="input-group m-3">
+                        <select class="form-control" name="professorId" id="professorSelect" required>
+                            <option th:each="professorFromList: ${professors}" th:text="${professorFromList.getFullName()}"
+                                    th:value="${professorFromList.id}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="input-group m-3">
+                        <button type="submit" class="btn btn-success btn-ok"
+                                id="addCourseBtn"
+                                data-toggle="tooltip" data-placement="top"
+                                title="You will be able to add students and lectures later">Add Course
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
