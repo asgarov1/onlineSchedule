@@ -30,7 +30,7 @@ public class ProfessorController {
         return "professor";
     }
 
-    @GetMapping("/searchProfessorsById")
+    @PostMapping("/searchProfessorsById")
     public String searchProfessorsById(@RequestParam Long id, Model model) {
         try {
             model.addAttribute("professors", Collections.singletonList(professorService.findById(id)));

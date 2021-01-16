@@ -1,9 +1,9 @@
 package com.asgarov.university.schedule.dao;
 
-import com.asgarov.university.schedule.domain.CourseLecture;
 import com.asgarov.university.schedule.domain.CourseStudent;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
@@ -23,25 +23,18 @@ public class CourseStudentDao extends AbstractWithDeleteByCourseDao<Long, Course
         return courseStudent;
     }
 
-    @Override
-    protected String tableName() {
-        return "courses_students";
-    }
-
     public List<CourseStudent> findAllByCourseId(final Long courseId) {
-        return getJdbcTemplate().query(getFindByCourseIdQuery(courseId), this::rowMapper);
+        return (List) new SimpleJdbcCall(getJdbcTemplate())
+                .withProcedureName("find_by_course_id_courses_students")
+                .returningResultSet("o_cursor", this::rowMapper)
+                .execute(new MapSqlParameterSource().addValue("p_course_id", courseId))
+                .get("o_cursor");
     }
 
-    public void deleteByStudentId(final Long id) {
-        getJdbcTemplate().update(getDeleteByStudentQuery(), id);
-    }
-
-    private String getDeleteByStudentQuery() {
-        return "delete from " + tableName() + " where student_id = ?";
-    }
-
-    private String getFindByCourseIdQuery(Long courseId) {
-        return "select * from " + tableName() + " where course_id = " + courseId + "";
+    public void deleteByStudentId(final Long studentId) {
+        new SimpleJdbcCall(getJdbcTemplate())
+                .withProcedureName("delete_courses_students_by_student_id")
+                .execute(new MapSqlParameterSource().addValue("p_student_id", studentId));
     }
 
     @Override
@@ -90,5 +83,12 @@ public class CourseStudentDao extends AbstractWithDeleteByCourseDao<Long, Course
         courseStudent.setStudentId((Long) result.get("o_student_id"));
 
         return courseStudent;
+    }
+
+    public void delete(Long course_id, Long studentId) {
+        new SimpleJdbcCall(getJdbcTemplate())
+                .withProcedureName("unregister_student")
+                .execute(new MapSqlParameterSource().addValue("p_course_id", course_id)
+                        .addValue("p_student_id", studentId));
     }
 }

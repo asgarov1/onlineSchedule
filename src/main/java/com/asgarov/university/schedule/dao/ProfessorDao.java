@@ -27,11 +27,6 @@ public class ProfessorDao extends AbstractDao<Long, Professor> {
     }
 
     @Override
-    protected String tableName() {
-        return "professor";
-    }
-
-    @Override
     protected SqlParameterSource getParameterMap(Professor professor) {
         return new MapSqlParameterSource()
                 .addValue("p_email", professor.getEmail())

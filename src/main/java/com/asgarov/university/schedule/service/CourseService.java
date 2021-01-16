@@ -62,20 +62,8 @@ public class CourseService extends AbstractDaoService<Long, Course> {
         return course.getRegisteredStudents().contains(student);
     }
 
-    public Course findCourseByLectureId(Long lectureId) {
-        return courseLectureDao.findByLectureId(lectureId)
-                .stream()
-                .map(cl -> findById(cl.getCourseId()))
-                .findFirst()
-                .orElseThrow(RuntimeException::new);
-    }
-
-    public Course findCourseByLectureId(String lectureId) {
-        return findCourseByLectureId(Long.valueOf(lectureId));
-    }
-
     public void unregisterStudent(Course course, Long studentId) {
-        courseStudentDao.deleteByStudentId(studentId);
+        courseStudentDao.delete(course.getId(), studentId);
     }
 
     public List<Student> getNotRegisteredStudents(Course course) {

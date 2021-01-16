@@ -41,7 +41,7 @@ public class CourseController {
         return "course";
     }
 
-    @GetMapping("/searchCoursesById")
+    @PostMapping("/searchCoursesById")
     public String searchCoursesById(@RequestParam Long id, Model model) {
         try {
             model.addAttribute("courses", Collections.singletonList(courseService.findById(id)));

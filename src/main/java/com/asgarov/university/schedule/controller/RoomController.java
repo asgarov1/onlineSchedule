@@ -28,7 +28,7 @@ public class RoomController {
         return "room";
     }
 
-    @GetMapping("/searchRoomsById")
+    @PostMapping("/searchRoomsById")
     public String searchRoomsById(@RequestParam Long id, Model model) {
         try {
             model.addAttribute("rooms", Collections.singletonList(roomService.findById(id)));
@@ -60,11 +60,7 @@ public class RoomController {
     public String updateRoom(@PathVariable Long id, @RequestParam String roomName) {
         Room room = roomService.findById(id);
         room.setName(roomName);
-        try {
-            roomService.update(room);
-        } catch (DaoException e) {
-            e.printStackTrace();
-        }
+        roomService.update(room);
         return "redirect:/room";
     }
 

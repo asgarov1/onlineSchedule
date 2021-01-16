@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -42,11 +41,6 @@ public class LectureDao extends AbstractDao<Long, Lecture> {
         return lecture;
     }
 
-    @Override
-    protected String tableName() {
-        return "lecture";
-    }
-
     public void deleteById(Long id) throws DaoException {
         courseLectureDao.deleteByLectureId(id);
         super.deleteById(id);
@@ -57,14 +51,6 @@ public class LectureDao extends AbstractDao<Long, Lecture> {
         List<Lecture> requestedLectures = new ArrayList<>();
         courseLectureList.forEach(cl -> requestedLectures.add(findById(cl.getLectureId())));
         return requestedLectures;
-    }
-
-    public List<Lecture> findAmount(int amount) {
-        return getJdbcTemplate().query(getFindAmountQuery(amount), this::rowMapper);
-    }
-
-    private String getFindAmountQuery(int amount) {
-        return "select * from " + tableName() + " limit " + amount + "";
     }
 
     @Override

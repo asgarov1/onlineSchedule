@@ -27,7 +27,7 @@ public class StudentController {
         return "student";
     }
 
-    @GetMapping("/searchStudentsById")
+    @PostMapping("/searchStudentsById")
     public String searchStudentsById(@RequestParam Long id, Model model) {
         try {
             model.addAttribute("students", Collections.singletonList(studentService.findById(id)));

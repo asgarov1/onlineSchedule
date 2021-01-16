@@ -302,10 +302,33 @@ BEGIN
 end;
 /
 
+
+CREATE OR REPLACE PROCEDURE delete_course_lectures_by_lecture_id(p_lecture_id IN lecture.id%TYPE)
+AS
+BEGIN
+    DELETE course_lectures where lecture_id = p_lecture_id;
+end;
+/
+
 CREATE OR REPLACE PROCEDURE delete_courses_students_by_course_id(p_course_id IN course_lectures.id%TYPE)
 AS
 BEGIN
     DELETE courses_students where course_id = p_course_id;
+end;
+/
+
+CREATE OR REPLACE PROCEDURE unregister_student(p_course_id IN course.id%TYPE,
+                                               p_student_id IN student.id%TYPE)
+AS
+BEGIN
+    DELETE courses_students where course_id = p_course_id and student_id = p_student_id;
+end;
+/
+
+CREATE OR REPLACE PROCEDURE delete_courses_students_by_student_id(p_student_id IN student.id%TYPE)
+AS
+BEGIN
+    DELETE courses_students where student_id = p_student_id;
 end;
 /
 
@@ -467,5 +490,23 @@ BEGIN
     INTO o_email, o_firstname, o_lastname, o_password, o_role, o_degree
     from student
     WHERE ID = p_id;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE find_by_lecture_id_course_lectures(p_course_id IN course.ID%TYPE,
+                                                               o_cursor OUT SYS_REFCURSOR)
+AS
+BEGIN
+    OPEN o_cursor FOR
+        SELECT * FROM course_lectures WHERE course_id = p_course_id;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE find_by_course_id_courses_students(p_course_id IN course.ID%TYPE,
+                                                               o_cursor OUT SYS_REFCURSOR)
+AS
+BEGIN
+    OPEN o_cursor FOR
+        SELECT * FROM courses_students WHERE course_id = p_course_id;
 END;
 /

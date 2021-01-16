@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
@@ -54,11 +55,6 @@ public class CourseDao extends AbstractDao<Long, Course> {
     }
 
     @Override
-    protected String tableName() {
-        return "course";
-    }
-
-    @Override
     public void deleteById(final Long id) throws DaoException {
         courseLectureDao.deleteByCourseId(id);
         courseStudentDao.deleteByCourseId(id);
@@ -96,7 +92,7 @@ public class CourseDao extends AbstractDao<Long, Course> {
         course.setId((Long) result.get("p_id"));
         course.setName((String) result.get("o_name"));
 
-        Long professorId = (Long) result.get("o_professor_id");
+        Long professorId = ((BigDecimal) result.get("o_professor_id")).longValue();
         course.setProfessor(professorDao.findById(professorId));
         course.setLectures(lectureDao.findAllByCourseId(course.getId()));
         course.setRegisteredStudents(studentDao.findAllStudentsByCourseId(course.getId()));

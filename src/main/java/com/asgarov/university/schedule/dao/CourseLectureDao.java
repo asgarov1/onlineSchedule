@@ -1,27 +1,18 @@
 package com.asgarov.university.schedule.dao;
 
-import com.asgarov.university.schedule.domain.Course;
 import com.asgarov.university.schedule.domain.CourseLecture;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Repository
 public class CourseLectureDao extends AbstractWithDeleteByCourseDao<Long, CourseLecture> {
-
-    private String getFindByCourseIdQuery(Long courseId) {
-        return "select * from " + tableName() + " where course_id = " + courseId + "";
-    }
-
-    private String getFindByLectureIdQuery(Long lectureId) {
-        return "select * from " + tableName() + " where lecture_id = " + lectureId + "";
-    }
 
     @Override
     protected CourseLecture rowMapper(final ResultSet resultSet, final int rowNum) throws SQLException {
@@ -32,25 +23,18 @@ public class CourseLectureDao extends AbstractWithDeleteByCourseDao<Long, Course
         return courseLecture;
     }
 
-    @Override
-    protected String tableName() {
-        return "course_lectures";
-    }
-
     public void deleteByLectureId(final Long lectureId) {
-        getJdbcTemplate().update(getDeleteByLectureQuery(), lectureId);
-    }
-
-    private String getDeleteByLectureQuery() {
-        return "delete from " + tableName() + " where lecture_id = ?";
+        new SimpleJdbcCall(getJdbcTemplate())
+                .withProcedureName("delete_course_lectures_by_lecture_id")
+                .execute(new MapSqlParameterSource().addValue("p_lecture_id", lectureId));
     }
 
     public List<CourseLecture> findByCourseId(final Long courseId) {
-        return getJdbcTemplate().query(getFindByCourseIdQuery(courseId), this::rowMapper);
-    }
-
-    public List<CourseLecture> findByLectureId(final Long courseId) {
-        return getJdbcTemplate().query(getFindByLectureIdQuery(courseId), this::rowMapper);
+        return (List) new SimpleJdbcCall(getJdbcTemplate())
+                .withProcedureName("find_by_course_id_course_lectures")
+                .returningResultSet("o_cursor", this::rowMapper)
+                .execute(new MapSqlParameterSource().addValue("p_course_id", courseId))
+                .get("o_cursor");
     }
 
     @Override

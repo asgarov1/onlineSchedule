@@ -25,11 +25,6 @@ public class StudentDao extends AbstractDao<Long, Student> {
     }
 
     @Override
-    protected String tableName() {
-        return "STUDENT";
-    }
-
-    @Override
     protected Student rowMapper(final ResultSet resultSet, final int rowNum) throws SQLException {
         Student student = new Student();
         student.setId(resultSet.getLong("id"));

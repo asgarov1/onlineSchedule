@@ -1,8 +1,6 @@
 package com.asgarov.university.schedule.dao;
 
 import com.asgarov.university.schedule.dao.exception.DaoException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -10,7 +8,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
-import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,20 +18,10 @@ import java.util.Map;
 public abstract class AbstractDao<K, T> {
 
     public static final String ID_PARAMETER = "p_id";
+
     private JdbcTemplate jdbcTemplate;
 
-    protected abstract T rowMapper(final ResultSet resultSet, final int rowNum) throws SQLException;
-
-    protected abstract String tableName();
-
-    public Long create(T object) {
-        Map<String, Object> execute = new SimpleJdbcCall(getJdbcTemplate())
-                .withProcedureName(getCreateProcedureName())
-                .execute(getParameterMap(object));
-        return ((BigDecimal) execute.get(ID_PARAMETER)).longValue();
-    }
-
-    protected abstract SqlParameterSource getParameterMap(T object);
+    protected abstract String getFindAllProcedure();
 
     protected abstract String getCreateProcedureName();
 
@@ -44,6 +31,18 @@ public abstract class AbstractDao<K, T> {
 
     protected abstract String getFindByIdProcedureName();
 
+    protected abstract SqlParameterSource getParameterMap(T object);
+
+    protected abstract T rowMapper(final ResultSet resultSet, final int rowNum) throws SQLException;
+
+    protected abstract T instantiateFromMap(Map<String, Object> result);
+
+    public Long create(T object) {
+        Map<String, Object> execute = new SimpleJdbcCall(getJdbcTemplate())
+                .withProcedureName(getCreateProcedureName())
+                .execute(getParameterMap(object));
+        return ((BigDecimal) execute.get(ID_PARAMETER)).longValue();
+    }
 
     public T findById(K id) {
         Map<String, Object> result = new SimpleJdbcCall(jdbcTemplate)
@@ -52,9 +51,6 @@ public abstract class AbstractDao<K, T> {
         result.put("p_id", id);
         return instantiateFromMap(result);
     }
-
-    protected abstract T instantiateFromMap(Map<String, Object> result);
-
 
     public void update(T object) {
         new SimpleJdbcCall(getJdbcTemplate())
@@ -75,8 +71,6 @@ public abstract class AbstractDao<K, T> {
                 .execute()
                 .get("o_cursor");
     }
-
-    protected abstract String getFindAllProcedure();
 
     public JdbcTemplate getJdbcTemplate() {
         return jdbcTemplate;

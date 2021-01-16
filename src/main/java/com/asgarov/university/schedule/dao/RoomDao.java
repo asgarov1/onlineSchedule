@@ -21,11 +21,6 @@ public class RoomDao extends AbstractDao<Long, Room> {
     }
 
     @Override
-    protected String tableName() {
-        return "room";
-    }
-
-    @Override
     protected SqlParameterSource getParameterMap(Room room) {
         return new MapSqlParameterSource()
                 .addValue("p_name", room.getName())
