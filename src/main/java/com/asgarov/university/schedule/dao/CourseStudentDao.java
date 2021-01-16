@@ -30,15 +30,6 @@ public class CourseStudentDao extends AbstractWithDeleteByCourseDao<Long, Course
     }
 
     @Override
-    protected Map<String, ?> createParameters(final CourseStudent courseStudent) {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("id", courseStudent.getId());
-        parameters.put("course_id", courseStudent.getCourseId());
-        parameters.put("student_id", courseStudent.getStudentId());
-        return parameters;
-    }
-
-    @Override
     protected Object[] updateParameters(final CourseStudent courseStudent) {
         return new Object[] { courseStudent.getCourseId(), courseStudent.getStudentId(), courseStudent.getId() };
     }
@@ -66,7 +57,9 @@ public class CourseStudentDao extends AbstractWithDeleteByCourseDao<Long, Course
 
     @Override
     protected SqlParameterSource getParameterMap(CourseStudent object) {
-        return new MapSqlParameterSource();
+        return new MapSqlParameterSource()
+                .addValue("p_course_id", object.getCourseId())
+                .addValue("p_student_id", object.getStudentId());
     }
 
     @Override

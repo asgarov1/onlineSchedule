@@ -36,7 +36,8 @@ public class CourseDao extends AbstractDao<Long, Course> {
     }
 
     public SqlParameterSource getParameterMap(Course course) {
-        return new MapSqlParameterSource().addValue("p_name", course.getName())
+        return new MapSqlParameterSource()
+                .addValue("p_name", course.getName())
                 .addValue("p_professor_id", course.getProfessor().getId());
     }
 
@@ -62,15 +63,6 @@ public class CourseDao extends AbstractDao<Long, Course> {
         course.setRegisteredStudents(studentDao.findAllStudentsByCourseId(course.getId()));
 
         return course;
-    }
-
-    @Override
-    protected Map<String, ?> createParameters(Course course) {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("name", course.getName());
-        parameters.put("professor_id", course.getProfessor().getId());
-        parameters.put("id", course.getId());
-        return parameters;
     }
 
     @Override

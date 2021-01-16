@@ -18,17 +18,11 @@ import java.util.Map;
 @Repository
 public abstract class AbstractDao<K, T> {
 
-    final static Logger log = LoggerFactory.getLogger(AbstractDao.class);
-
-    private DataSource dataSource;
-
     private JdbcTemplate jdbcTemplate;
 
     protected abstract String getUpdateQuery();
 
     protected abstract T rowMapper(final ResultSet resultSet, final int rowNum) throws SQLException;
-
-    protected abstract Map<String, ?> createParameters(T object);
 
     protected abstract Object[] updateParameters(T object);
 
@@ -47,12 +41,10 @@ public abstract class AbstractDao<K, T> {
     }
 
     public Long create(T object) {
-//        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
-//                .withTableName(tableName())
-//                .usingGeneratedKeyColumns("id");
-
-//        return simpleJdbcInsert.executeAndReturnKey(createParameters(object)).longValue();
-        return (Long) new SimpleJdbcCall(getJdbcTemplate()).withProcedureName(getCreateProcedureName()).execute(getParameterMap(object)).get("p_id");
+        return (Long) new SimpleJdbcCall(getJdbcTemplate())
+                .withProcedureName(getCreateProcedureName())
+                .execute(getParameterMap(object))
+                .get("p_id");
     }
 
     protected abstract SqlParameterSource getParameterMap(T object);
@@ -86,8 +78,4 @@ public abstract class AbstractDao<K, T> {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    @Autowired
-    public void setDataSource(final DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
 }

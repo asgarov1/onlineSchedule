@@ -46,15 +46,6 @@ public class LectureDao extends AbstractDao<Long, Lecture> {
     }
 
     @Override
-    protected Map<String, ?> createParameters(final Lecture lecture) {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("id", lecture.getId());
-        parameters.put("dateTime", lecture.getDateTime());
-        parameters.put("room_id", lecture.getRoom().getId());
-        return parameters;
-    }
-
-    @Override
     protected Object[] updateParameters(final Lecture lecture) {
         return new Object[] { lecture.getDateTime(), lecture.getRoom().getId(), lecture.getId() };
     }
@@ -86,7 +77,9 @@ public class LectureDao extends AbstractDao<Long, Lecture> {
 
     @Override
     protected SqlParameterSource getParameterMap(Lecture lecture) {
-        return new MapSqlParameterSource();
+        return new MapSqlParameterSource()
+                .addValue("p_datetime", lecture.getDateTime())
+                .addValue("p_room_id", lecture.getRoom().getId());
     }
 
     @Override

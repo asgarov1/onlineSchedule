@@ -1,7 +1,6 @@
 package com.asgarov.university.schedule.dao;
 
 
-import com.asgarov.university.schedule.domain.CourseLecture;
 import com.asgarov.university.schedule.domain.Professor;
 import com.asgarov.university.schedule.domain.Role;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -10,8 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
 @Repository
 public class ProfessorDao extends AbstractDao<Long, Professor> {
@@ -35,21 +32,9 @@ public class ProfessorDao extends AbstractDao<Long, Professor> {
     }
 
     @Override
-    protected Map<String, ?> createParameters(final Professor professor) {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("id", professor.getId());
-        parameters.put("email", professor.getEmail());
-        parameters.put("firstName", professor.getFirstName());
-        parameters.put("lastName", professor.getLastName());
-        parameters.put("password", professor.getPassword());
-        parameters.put("role", professor.getRole().toString());
-        return parameters;
-    }
-
-    @Override
     protected Object[] updateParameters(final Professor professor) {
-        return new Object[] { professor.getEmail(), professor.getFirstName(), professor.getLastName(),
-                professor.getPassword(), professor.getRole().toString(), professor.getId() };
+        return new Object[]{professor.getEmail(), professor.getFirstName(), professor.getLastName(),
+                professor.getPassword(), professor.getRole().toString(), professor.getId()};
     }
 
     @Override
@@ -59,7 +44,12 @@ public class ProfessorDao extends AbstractDao<Long, Professor> {
 
     @Override
     protected SqlParameterSource getParameterMap(Professor professor) {
-        return new MapSqlParameterSource();
+        return new MapSqlParameterSource()
+                .addValue("p_email", professor.getEmail())
+                .addValue("p_firstname", professor.getFirstName())
+                .addValue("p_lastname", professor.getLastName())
+                .addValue("p_password", professor.getPassword())
+                .addValue("p_role", professor.getRole());
     }
 
     @Override

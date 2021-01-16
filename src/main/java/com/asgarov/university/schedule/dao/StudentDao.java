@@ -50,19 +50,6 @@ public class StudentDao extends AbstractDao<Long, Student> {
     }
 
     @Override
-    protected Map<String, ?> createParameters(final Student student) {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("id", student.getId());
-        parameters.put("email", student.getEmail());
-        parameters.put("firstName", student.getFirstName());
-        parameters.put("lastName", student.getLastName());
-        parameters.put("password", student.getPassword());
-        parameters.put("role", student.getRole().toString());
-        parameters.put("degree", student.getDegree().toString());
-        return parameters;
-    }
-
-    @Override
     protected Object[] updateParameters(final Student student) {
         return new Object[] { student.getEmail(), student.getFirstName(), student.getLastName(),
                 student.getPassword(), student.getRole().toString(), student.getDegree().toString(), student.getId() };
@@ -83,7 +70,13 @@ public class StudentDao extends AbstractDao<Long, Student> {
 
     @Override
     protected SqlParameterSource getParameterMap(Student student) {
-        return new MapSqlParameterSource();
+        return new MapSqlParameterSource()
+                .addValue("p_email", student.getEmail())
+                .addValue("p_firstname", student.getFirstName())
+                .addValue("p_lastname", student.getLastName())
+                .addValue("p_password", student.getPassword())
+                .addValue("p_role", student.getRole())
+                .addValue("p_degree", student.getDegree());
     }
 
     @Override

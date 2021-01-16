@@ -26,16 +26,8 @@ public class RoomDao extends AbstractDao<Long, Room> {
     }
 
     @Override
-    protected Map<String, ?> createParameters(final Room room) {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("id", room.getId());
-        parameters.put("name", room.getName());
-        return parameters;
-    }
-
-    @Override
     protected Object[] updateParameters(final Room room) {
-        return new Object[] { room.getName(), room.getId() };
+        return new Object[]{room.getName(), room.getId()};
     }
 
     @Override
@@ -45,7 +37,8 @@ public class RoomDao extends AbstractDao<Long, Room> {
 
     @Override
     protected SqlParameterSource getParameterMap(Room room) {
-        return new MapSqlParameterSource();
+        return new MapSqlParameterSource()
+                .addValue("p_name", room.getName());
     }
 
     @Override
