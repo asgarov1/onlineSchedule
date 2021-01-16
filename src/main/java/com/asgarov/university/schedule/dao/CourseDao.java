@@ -53,8 +53,8 @@ public class CourseDao extends AbstractDao<Long, Course> {
     }
 
     @Override
-    protected String getUpdateQuery() {
-        return "UPDATE " + tableName() + " SET name = ?, professor_id = ? WHERE id = ?";
+    protected String getDeleteProcedureName() {
+        return "delete_course";
     }
 
     @Override
@@ -74,11 +74,6 @@ public class CourseDao extends AbstractDao<Long, Course> {
     @Override
     protected String tableName() {
         return "course";
-    }
-
-    @Override
-    protected Object[] updateParameters(final Course course) {
-        return new Object[] { course.getName(), course.getProfessor().getId(), course.getId() };
     }
 
     @Override

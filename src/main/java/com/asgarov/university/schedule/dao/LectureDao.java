@@ -11,9 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Repository
 public class LectureDao extends AbstractDao<Long, Lecture> {
@@ -32,22 +30,12 @@ public class LectureDao extends AbstractDao<Long, Lecture> {
     }
 
     @Override
-    protected String getUpdateQuery() {
-        return "UPDATE " + tableName() + " SET dateTime = ?, room_id = ? WHERE id = ?";
-    }
-
-    @Override
     protected Lecture rowMapper(final ResultSet resultSet, final int rowNum) throws SQLException {
         Lecture lecture = new Lecture();
         lecture.setId(resultSet.getLong("id"));
         lecture.setDateTime(resultSet.getTimestamp("dateTime").toLocalDateTime());
         lecture.setRoom(roomDao.findById(resultSet.getLong("room_id")));
         return lecture;
-    }
-
-    @Override
-    protected Object[] updateParameters(final Lecture lecture) {
-        return new Object[] { lecture.getDateTime(), lecture.getRoom().getId(), lecture.getId() };
     }
 
     @Override
@@ -91,5 +79,10 @@ public class LectureDao extends AbstractDao<Long, Lecture> {
     @Override
     protected String getUpdateProcedureName() {
         return "update_lecture";
+    }
+
+    @Override
+    protected String getDeleteProcedureName() {
+        return "delete_lecture";
     }
 }

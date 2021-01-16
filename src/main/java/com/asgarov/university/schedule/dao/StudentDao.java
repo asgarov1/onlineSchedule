@@ -12,9 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Repository
 public class StudentDao extends AbstractDao<Long, Student> {
@@ -31,12 +29,6 @@ public class StudentDao extends AbstractDao<Long, Student> {
     }
 
     @Override
-    protected String getUpdateQuery() {
-        return "UPDATE " + tableName()
-                + " SET email = ?, firstName = ?, lastName = ?, password = ?, role = ?, degree = ? WHERE id = ?";
-    }
-
-    @Override
     protected Student rowMapper(final ResultSet resultSet, final int rowNum) throws SQLException {
         Student student = new Student();
         student.setId(resultSet.getLong("id"));
@@ -47,12 +39,6 @@ public class StudentDao extends AbstractDao<Long, Student> {
         student.setRole(Role.valueOf(resultSet.getString("role")));
         student.setDegree(Student.Degree.valueOf(resultSet.getString("degree")));
         return student;
-    }
-
-    @Override
-    protected Object[] updateParameters(final Student student) {
-        return new Object[] { student.getEmail(), student.getFirstName(), student.getLastName(),
-                student.getPassword(), student.getRole().toString(), student.getDegree().toString(), student.getId() };
     }
 
     @Override
@@ -88,5 +74,10 @@ public class StudentDao extends AbstractDao<Long, Student> {
     @Override
     protected String getUpdateProcedureName() {
         return "update_student";
+    }
+
+    @Override
+    protected String getDeleteProcedureName() {
+        return "delete_student";
     }
 }

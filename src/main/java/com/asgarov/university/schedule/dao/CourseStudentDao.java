@@ -1,6 +1,5 @@
 package com.asgarov.university.schedule.dao;
 
-import com.asgarov.university.schedule.domain.CourseLecture;
 import com.asgarov.university.schedule.domain.CourseStudent;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -8,17 +7,10 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Repository
 public class CourseStudentDao extends AbstractWithDeleteByCourseDao<Long, CourseStudent> {
-
-    @Override
-    protected String getUpdateQuery() {
-        return "UPDATE " + tableName() + " SET course_id = ?, student_id = ? WHERE id = ?";
-    }
 
     @Override
     protected CourseStudent rowMapper(final ResultSet resultSet, final int rowNum) throws SQLException {
@@ -27,11 +19,6 @@ public class CourseStudentDao extends AbstractWithDeleteByCourseDao<Long, Course
         courseStudent.setCourseId(resultSet.getLong("course_id"));
         courseStudent.setStudentId(resultSet.getLong("student_id"));
         return courseStudent;
-    }
-
-    @Override
-    protected Object[] updateParameters(final CourseStudent courseStudent) {
-        return new Object[] { courseStudent.getCourseId(), courseStudent.getStudentId(), courseStudent.getId() };
     }
 
     @Override
@@ -71,5 +58,10 @@ public class CourseStudentDao extends AbstractWithDeleteByCourseDao<Long, Course
     @Override
     protected String getUpdateProcedureName() {
         return "update_courses_students";
+    }
+
+    @Override
+    protected String getDeleteProcedureName() {
+        return "delete_courses_students";
     }
 }

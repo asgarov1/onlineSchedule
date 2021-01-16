@@ -23,24 +23,12 @@ public class CourseLectureDao extends AbstractWithDeleteByCourseDao<Long, Course
     }
 
     @Override
-    protected String getUpdateQuery() {
-        return "UPDATE " + tableName() + " SET course_id = ?, lecture_id = ? WHERE id = ?";
-    }
-
-    @Override
     protected CourseLecture rowMapper(final ResultSet resultSet, final int rowNum) throws SQLException {
         CourseLecture courseLecture = new CourseLecture();
         courseLecture.setId(resultSet.getLong("id"));
         courseLecture.setCourseId(resultSet.getLong("course_id"));
         courseLecture.setLectureId(resultSet.getLong("lecture_id"));
         return courseLecture;
-    }
-
-    @Override
-    protected Object[] updateParameters(final CourseLecture courseLecture) {
-        return new Object[] {
-                courseLecture.getCourseId(), courseLecture.getLectureId(), courseLecture.getId()
-        };
     }
 
     @Override
@@ -80,5 +68,10 @@ public class CourseLectureDao extends AbstractWithDeleteByCourseDao<Long, Course
     @Override
     protected String getUpdateProcedureName() {
         return "update_course_lectures";
+    }
+
+    @Override
+    protected String getDeleteProcedureName() {
+        return "delete_course_lectures";
     }
 }

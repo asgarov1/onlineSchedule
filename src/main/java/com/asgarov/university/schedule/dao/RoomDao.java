@@ -7,15 +7,9 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
 @Repository
 public class RoomDao extends AbstractDao<Long, Room> {
-    @Override
-    protected String getUpdateQuery() {
-        return "UPDATE " + tableName() + " SET name = ? WHERE id = ?";
-    }
 
     @Override
     protected Room rowMapper(final ResultSet resultSet, final int rowNum) throws SQLException {
@@ -23,11 +17,6 @@ public class RoomDao extends AbstractDao<Long, Room> {
         room.setId(resultSet.getLong("id"));
         room.setName(resultSet.getString("name"));
         return room;
-    }
-
-    @Override
-    protected Object[] updateParameters(final Room room) {
-        return new Object[]{room.getName(), room.getId()};
     }
 
     @Override
@@ -50,5 +39,10 @@ public class RoomDao extends AbstractDao<Long, Room> {
     @Override
     protected String getUpdateProcedureName() {
         return "update_room";
+    }
+
+    @Override
+    protected String getDeleteProcedureName() {
+        return "delete_room";
     }
 }

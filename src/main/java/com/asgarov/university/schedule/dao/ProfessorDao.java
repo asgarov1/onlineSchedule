@@ -14,12 +14,6 @@ import java.sql.SQLException;
 public class ProfessorDao extends AbstractDao<Long, Professor> {
 
     @Override
-    protected String getUpdateQuery() {
-        return "UPDATE " + tableName()
-                + " SET email = ?, firstName = ?, lastName = ?, password = ?, role = ? WHERE id = ?";
-    }
-
-    @Override
     protected Professor rowMapper(final ResultSet resultSet, final int rowNum) throws SQLException {
         Professor professor = new Professor();
         professor.setId(resultSet.getLong("id"));
@@ -29,12 +23,6 @@ public class ProfessorDao extends AbstractDao<Long, Professor> {
         professor.setPassword(resultSet.getString("password"));
         professor.setRole(Role.valueOf(resultSet.getString("role")));
         return professor;
-    }
-
-    @Override
-    protected Object[] updateParameters(final Professor professor) {
-        return new Object[]{professor.getEmail(), professor.getFirstName(), professor.getLastName(),
-                professor.getPassword(), professor.getRole().toString(), professor.getId()};
     }
 
     @Override
@@ -61,5 +49,10 @@ public class ProfessorDao extends AbstractDao<Long, Professor> {
     @Override
     protected String getUpdateProcedureName() {
         return "update_professor";
+    }
+
+    @Override
+    protected String getDeleteProcedureName() {
+        return "delete_professor";
     }
 }

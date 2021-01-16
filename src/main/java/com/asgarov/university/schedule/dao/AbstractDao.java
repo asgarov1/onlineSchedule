@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
@@ -21,20 +22,12 @@ public abstract class AbstractDao<K, T> {
 
     private JdbcTemplate jdbcTemplate;
 
-    protected abstract String getUpdateQuery();
-
     protected abstract T rowMapper(final ResultSet resultSet, final int rowNum) throws SQLException;
-
-    protected abstract Object[] updateParameters(T object);
 
     protected abstract String tableName();
 
     protected String getFindByIdQuery(K id) {
         return "select * from " + tableName() + " where id = " + id + "";
-    }
-
-    protected String getDeleteQuery() {
-        return "delete from " + tableName() + " where id = ?";
     }
 
     protected String getFindAllQuery() {
@@ -54,6 +47,8 @@ public abstract class AbstractDao<K, T> {
 
     protected abstract String getUpdateProcedureName();
 
+    protected abstract String getDeleteProcedureName();
+
     public T findById(K id) {
         return jdbcTemplate.queryForObject(getFindByIdQuery(id), this::rowMapper);
     }
@@ -65,7 +60,9 @@ public abstract class AbstractDao<K, T> {
     }
 
     public void deleteById(K id) throws DaoException {
-        jdbcTemplate.update(getDeleteQuery(), id);
+        new SimpleJdbcCall(getJdbcTemplate())
+                .withProcedureName(getDeleteProcedureName())
+                .execute(new MapSqlParameterSource().addValue("p_id", id));
     }
 
     public List<T> findAll() {

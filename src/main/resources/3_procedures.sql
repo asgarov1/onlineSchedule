@@ -237,3 +237,55 @@ BEGIN
     where id = p_id;
 end;
 /
+
+
+--- DELETE PROCEDURES
+
+CREATE OR REPLACE PROCEDURE delete_course(p_id IN COURSE.ID%TYPE)
+AS
+BEGIN
+    DELETE COURSE where ID = p_id;
+end;
+/
+
+CREATE OR REPLACE PROCEDURE delete_course_lectures(p_id IN course_lectures.id%TYPE)
+AS
+BEGIN
+    DELETE course_lectures where id = p_id;
+end;
+/
+
+CREATE OR REPLACE PROCEDURE delete_courses_students(p_id IN courses_students.id%TYPE)
+AS
+BEGIN
+    DELETE courses_students where id = p_id;
+end;
+/
+
+CREATE OR REPLACE PROCEDURE delete_lecture(p_id IN lecture.id%TYPE)
+AS
+BEGIN
+    DELETE lecture where id = p_id;
+end;
+/
+
+CREATE OR REPLACE PROCEDURE delete_professor(p_id IN professor.id%TYPE)
+AS
+BEGIN
+    DELETE professor where id = p_id;
+end;
+/
+
+CREATE OR REPLACE PROCEDURE delete_student(p_id IN student.id%TYPE)
+AS
+BEGIN
+    DELETE student where id = p_id;
+end;
+/
+
+CREATE OR REPLACE PROCEDURE delete_room(p_id IN room.id%TYPE)
+AS
+BEGIN
+    DELETE room where id = p_id;
+end;
+/
