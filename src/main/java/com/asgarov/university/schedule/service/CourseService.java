@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
 @Service
 public class CourseService extends AbstractDaoService<Long, Course> {
 
-    private CourseLectureDao courseLectureDao;
-    private CourseStudentDao courseStudentDao;
-    private StudentService studentService;
+    private final CourseLectureDao courseLectureDao;
+    private final CourseStudentDao courseStudentDao;
+    private final StudentService studentService;
 
     public CourseService(AbstractDao<Long, Course> abstractDao, CourseLectureDao courseLectureDao, CourseStudentDao courseStudentDao, StudentService studentService) {
         super(abstractDao);
@@ -42,6 +42,7 @@ public class CourseService extends AbstractDaoService<Long, Course> {
     }
 
     public void scheduleLecture(Long courseId, Long lectureId) {
+        System.out.println("ATTENTION: " + courseId + " " + lectureId);
         courseLectureDao.create(new CourseLecture(courseId, lectureId));
     }
 
@@ -68,10 +69,6 @@ public class CourseService extends AbstractDaoService<Long, Course> {
                 .map(cl -> findById(cl.getCourseId()))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
-    }
-
-    public Course findCourseByLectureId(Integer lectureId) {
-        return findCourseByLectureId((long) lectureId);
     }
 
     public Course findCourseByLectureId(String lectureId) {

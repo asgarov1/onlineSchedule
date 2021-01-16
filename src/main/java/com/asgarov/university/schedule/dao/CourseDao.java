@@ -38,12 +38,18 @@ public class CourseDao extends AbstractDao<Long, Course> {
     public SqlParameterSource getParameterMap(Course course) {
         return new MapSqlParameterSource()
                 .addValue("p_name", course.getName())
-                .addValue("p_professor_id", course.getProfessor().getId());
+                .addValue("p_professor_id", course.getProfessor().getId())
+                .addValue("p_id", course.getId());
     }
 
     @Override
     protected String getCreateProcedureName() {
         return "create_course";
+    }
+
+    @Override
+    protected String getUpdateProcedureName() {
+        return "update_course";
     }
 
     @Override

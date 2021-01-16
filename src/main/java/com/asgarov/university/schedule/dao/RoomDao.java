@@ -38,11 +38,17 @@ public class RoomDao extends AbstractDao<Long, Room> {
     @Override
     protected SqlParameterSource getParameterMap(Room room) {
         return new MapSqlParameterSource()
-                .addValue("p_name", room.getName());
+                .addValue("p_name", room.getName())
+                .addValue("p_id", room.getId());
     }
 
     @Override
     protected String getCreateProcedureName() {
         return "create_room";
+    }
+
+    @Override
+    protected String getUpdateProcedureName() {
+        return "update_room";
     }
 }

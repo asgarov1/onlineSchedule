@@ -55,7 +55,7 @@
                         <td th:unless="${lectureStat.index} == 0" th:text="| |">Date</td>
                         <td th:text="|${lecture.dateTime.getHour()}:${lecture.dateTime.getMinute()}|">Time</td>
                         <td th:text="${lecture.room}">Room</td>
-                        <td th:text="${courseService.findCourseByLectureId(__${lecture.id}__).name}">Name</td>
+                        <td>Course Name</td>
                     </tr>
                     </tbody>
                 </table>

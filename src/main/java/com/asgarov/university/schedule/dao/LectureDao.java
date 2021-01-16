@@ -79,7 +79,8 @@ public class LectureDao extends AbstractDao<Long, Lecture> {
     protected SqlParameterSource getParameterMap(Lecture lecture) {
         return new MapSqlParameterSource()
                 .addValue("p_datetime", lecture.getDateTime())
-                .addValue("p_room_id", lecture.getRoom().getId());
+                .addValue("p_room_id", lecture.getRoom().getId())
+                .addValue("p_id", lecture.getId());
     }
 
     @Override
@@ -87,4 +88,8 @@ public class LectureDao extends AbstractDao<Long, Lecture> {
         return "create_lecture";
     }
 
+    @Override
+    protected String getUpdateProcedureName() {
+        return "update_lecture";
+    }
 }

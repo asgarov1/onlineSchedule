@@ -76,11 +76,17 @@ public class StudentDao extends AbstractDao<Long, Student> {
                 .addValue("p_lastname", student.getLastName())
                 .addValue("p_password", student.getPassword())
                 .addValue("p_role", student.getRole())
-                .addValue("p_degree", student.getDegree());
+                .addValue("p_degree", student.getDegree())
+                .addValue("p_id", student.getId());
     }
 
     @Override
     protected String getCreateProcedureName() {
         return "create_student";
+    }
+
+    @Override
+    protected String getUpdateProcedureName() {
+        return "update_student";
     }
 }

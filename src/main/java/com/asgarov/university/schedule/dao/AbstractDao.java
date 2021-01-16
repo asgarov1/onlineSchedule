@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -41,24 +42,26 @@ public abstract class AbstractDao<K, T> {
     }
 
     public Long create(T object) {
-        return (Long) new SimpleJdbcCall(getJdbcTemplate())
+        Map<String, Object> execute = new SimpleJdbcCall(getJdbcTemplate())
                 .withProcedureName(getCreateProcedureName())
-                .execute(getParameterMap(object))
-                .get("p_id");
+                .execute(getParameterMap(object));
+        return ((BigDecimal) execute.get("P_ID")).longValue();
     }
 
     protected abstract SqlParameterSource getParameterMap(T object);
 
     protected abstract String getCreateProcedureName();
 
+    protected abstract String getUpdateProcedureName();
+
     public T findById(K id) {
         return jdbcTemplate.queryForObject(getFindByIdQuery(id), this::rowMapper);
     }
 
-    public void update(T object) throws DaoException {
-        if (jdbcTemplate.update(getUpdateQuery(), updateParameters(object)) == 0) {
-            throw new DaoException("Problem updating entity");
-        }
+    public void update(T object) {
+        new SimpleJdbcCall(getJdbcTemplate())
+                .withProcedureName(getUpdateProcedureName())
+                .execute(getParameterMap(object));
     }
 
     public void deleteById(K id) throws DaoException {

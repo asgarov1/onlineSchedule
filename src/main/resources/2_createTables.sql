@@ -1,6 +1,5 @@
 ALTER SESSION SET CURRENT_SCHEMA = GUI;
 
-
 CREATE TABLE professor (
     id NUMBER(20) generated as identity primary key,
     email varchar(255) DEFAULT NULL,

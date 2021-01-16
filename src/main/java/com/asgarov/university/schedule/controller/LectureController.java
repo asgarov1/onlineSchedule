@@ -27,9 +27,9 @@ import java.util.stream.IntStream;
 @RequestMapping("lecture")
 public class LectureController {
 
-    private LectureService lectureService;
-    private RoomService roomService;
-    private CourseService courseService;
+    private final LectureService lectureService;
+    private final RoomService roomService;
+    private final CourseService courseService;
     private final static Integer AMOUNT_PER_PAGE = 10;
 
     public LectureController(LectureService lectureService, RoomService roomService, CourseService courseService) {

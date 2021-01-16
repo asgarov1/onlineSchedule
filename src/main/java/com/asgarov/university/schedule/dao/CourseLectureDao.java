@@ -68,11 +68,17 @@ public class CourseLectureDao extends AbstractWithDeleteByCourseDao<Long, Course
     protected SqlParameterSource getParameterMap(CourseLecture object) {
         return new MapSqlParameterSource()
                 .addValue("p_course_id", object.getCourseId())
-                .addValue("p_lecture_id", object.getLectureId());
+                .addValue("p_lecture_id", object.getLectureId())
+                .addValue("p_id", object.getId());
     }
 
     @Override
     protected String getCreateProcedureName() {
         return "create_course_lectures";
+    }
+
+    @Override
+    protected String getUpdateProcedureName() {
+        return "update_course_lectures";
     }
 }

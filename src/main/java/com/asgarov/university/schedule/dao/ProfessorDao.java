@@ -49,11 +49,17 @@ public class ProfessorDao extends AbstractDao<Long, Professor> {
                 .addValue("p_firstname", professor.getFirstName())
                 .addValue("p_lastname", professor.getLastName())
                 .addValue("p_password", professor.getPassword())
-                .addValue("p_role", professor.getRole());
+                .addValue("p_role", professor.getRole())
+                .addValue("p_id", professor.getId());
     }
 
     @Override
     protected String getCreateProcedureName() {
         return "create_professor";
+    }
+
+    @Override
+    protected String getUpdateProcedureName() {
+        return "update_professor";
     }
 }
