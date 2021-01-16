@@ -1,6 +1,8 @@
 ALTER SESSION SET CURRENT_SCHEMA = GUI;
 
+-------------------
 --CREATE PROCEDURES
+-------------------
 
 CREATE TABLE professor
 (
@@ -140,7 +142,9 @@ BEGIN
 end;
 /
 
+---------------------
 --- UPDATE PROCEDURES
+---------------------
 
 CREATE OR REPLACE PROCEDURE update_course(p_name IN COURSE.NAME%TYPE,
                                           p_professor_id IN PROFESSOR.ID%TYPE,
@@ -238,8 +242,9 @@ BEGIN
 end;
 /
 
-
+---------------------
 --- DELETE PROCEDURES
+---------------------
 
 CREATE OR REPLACE PROCEDURE delete_course(p_id IN COURSE.ID%TYPE)
 AS
@@ -288,4 +293,179 @@ AS
 BEGIN
     DELETE room where id = p_id;
 end;
+/
+
+CREATE OR REPLACE PROCEDURE delete_course_lectures_by_course_id(p_course_id IN course_lectures.id%TYPE)
+AS
+BEGIN
+    DELETE course_lectures where course_id = p_course_id;
+end;
+/
+
+CREATE OR REPLACE PROCEDURE delete_courses_students_by_course_id(p_course_id IN course_lectures.id%TYPE)
+AS
+BEGIN
+    DELETE courses_students where course_id = p_course_id;
+end;
+/
+
+-----------------------
+--- FIND ALL PROCEDURES
+-----------------------
+
+CREATE OR REPLACE PROCEDURE find_all_courses(o_cursor OUT SYS_REFCURSOR)
+AS
+BEGIN
+    OPEN o_cursor FOR
+        SELECT * FROM course;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE find_all_course_lectures(o_cursor OUT SYS_REFCURSOR)
+AS
+BEGIN
+    OPEN o_cursor FOR
+        SELECT * FROM course_lectures;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE find_all_courses_students(o_cursor OUT SYS_REFCURSOR)
+AS
+BEGIN
+    OPEN o_cursor FOR
+        SELECT * FROM courses_students;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE find_all_lectures(o_cursor OUT SYS_REFCURSOR)
+AS
+BEGIN
+    OPEN o_cursor FOR
+        SELECT * FROM lecture;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE find_all_professors(o_cursor OUT SYS_REFCURSOR)
+AS
+BEGIN
+    OPEN o_cursor FOR
+        SELECT * FROM professor;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE find_all_students(o_cursor OUT SYS_REFCURSOR)
+AS
+BEGIN
+    OPEN o_cursor FOR
+        SELECT * FROM student;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE find_all_rooms(o_cursor OUT SYS_REFCURSOR)
+AS
+BEGIN
+    OPEN o_cursor FOR
+        SELECT * FROM room;
+END;
+/
+
+
+
+-------------------------
+--- Find by Id Procedures
+-------------------------
+
+CREATE OR REPLACE PROCEDURE find_by_id_course(p_id IN course.ID%TYPE,
+                                              o_name OUT course.NAME%TYPE,
+                                              o_professor_id OUT course.professor_id%TYPE)
+AS
+BEGIN
+    SELECT name, professor_id
+    INTO o_name, o_professor_id
+    from course
+    WHERE ID = p_id;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE find_by_id_course_lectures(p_id IN course_lectures.ID%TYPE,
+                                                       o_course_id OUT course_lectures.COURSE_ID%TYPE,
+                                                       o_lecture_id OUT course_lectures.LECTURE_ID%TYPE)
+AS
+BEGIN
+    SELECT course_id, lecture_id
+    INTO o_course_id, o_lecture_id
+    from course_lectures
+    WHERE ID = p_id;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE find_by_id_courses_students(p_id IN courses_students.ID%TYPE,
+                                                        o_course_id OUT courses_students.COURSE_ID%TYPE,
+                                                        o_student_id OUT courses_students.STUDENT_ID%TYPE)
+AS
+BEGIN
+    SELECT course_id, student_id
+    INTO o_course_id, o_student_id
+    from courses_students
+    WHERE ID = p_id;
+END;
+/
+
+
+CREATE OR REPLACE PROCEDURE find_by_id_lecture(p_id IN lecture.ID%TYPE,
+                                               o_datetime OUT lecture.dateTime%TYPE,
+                                               o_room_id OUT lecture.room_id%TYPE)
+AS
+BEGIN
+    SELECT dateTime, room_id
+    INTO o_datetime, o_room_id
+    from lecture
+    WHERE ID = p_id;
+END;
+/
+
+
+CREATE OR REPLACE PROCEDURE find_by_id_professor(p_id IN professor.ID%TYPE,
+                                                 o_email OUT professor.email%TYPE,
+                                                 o_firstname OUT professor.firstName%TYPE,
+                                                 o_lastname OUT professor.lastName%TYPE,
+                                                 o_password OUT professor.password%TYPE,
+                                                 o_role OUT professor.role%TYPE)
+AS
+BEGIN
+    SELECT email, firstName, lastName, password, role
+    INTO o_email, o_firstname, o_lastname, o_password, o_role
+    from professor
+    WHERE ID = p_id;
+END;
+/
+
+
+CREATE OR REPLACE PROCEDURE find_by_id_room(p_id IN room.ID%TYPE,
+                                            o_name OUT room.name%TYPE)
+AS
+BEGIN
+    SELECT name
+    INTO o_name
+    from room
+    WHERE ID = p_id;
+END;
+/
+
+
+CREATE OR REPLACE PROCEDURE find_by_id_student(p_id IN student.ID%TYPE,
+                                               o_email OUT student.email%TYPE,
+                                               o_firstname OUT student.firstName%TYPE,
+                                               o_lastname OUT student.lastName%TYPE,
+                                               o_password OUT student.password%TYPE,
+                                               o_role OUT student.role%TYPE,
+                                               o_degree OUT student.degree%TYPE
+)
+AS
+BEGIN
+    SELECT email, firstName, lastName, password, role, degree
+    INTO o_email, o_firstname, o_lastname, o_password, o_role, o_degree
+    from student
+    WHERE ID = p_id;
+END;
 /

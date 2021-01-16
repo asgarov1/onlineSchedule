@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class StudentDao extends AbstractDao<Long, Student> {
@@ -79,5 +80,30 @@ public class StudentDao extends AbstractDao<Long, Student> {
     @Override
     protected String getDeleteProcedureName() {
         return "delete_student";
+    }
+
+    @Override
+    protected String getFindAllProcedure() {
+        return "find_all_students";
+    }
+
+    @Override
+    protected String getFindByIdProcedureName() {
+        return "find_by_id_student";
+    }
+
+    @Override
+    protected Student instantiateFromMap(Map<String, Object> result) {
+        Student student = new Student();
+
+        student.setId((Long) result.get("p_id"));
+        student.setEmail((String) result.get("o_email"));
+        student.setFirstName((String) result.get("o_firstname"));
+        student.setLastName((String) result.get("o_lastname"));
+        student.setPassword((String) result.get("o_password"));
+        student.setRole(Role.valueOf((String) result.get("o_role")));
+        student.setDegree(Student.Degree.valueOf((String) result.get("o_degree")));
+
+        return student;
     }
 }

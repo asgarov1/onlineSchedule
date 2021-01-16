@@ -42,7 +42,6 @@ public class CourseService extends AbstractDaoService<Long, Course> {
     }
 
     public void scheduleLecture(Long courseId, Long lectureId) {
-        System.out.println("ATTENTION: " + courseId + " " + lectureId);
         courseLectureDao.create(new CourseLecture(courseId, lectureId));
     }
 

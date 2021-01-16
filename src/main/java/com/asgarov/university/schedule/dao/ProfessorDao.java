@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 
 @Repository
 public class ProfessorDao extends AbstractDao<Long, Professor> {
@@ -54,5 +55,29 @@ public class ProfessorDao extends AbstractDao<Long, Professor> {
     @Override
     protected String getDeleteProcedureName() {
         return "delete_professor";
+    }
+
+    @Override
+    protected String getFindAllProcedure() {
+        return "find_all_professors";
+    }
+
+    @Override
+    protected String getFindByIdProcedureName() {
+        return "find_by_id_professor";
+    }
+
+    @Override
+    protected Professor instantiateFromMap(Map<String, Object> result) {
+        Professor professor = new Professor();
+
+        professor.setId((Long) result.get("p_id"));
+        professor.setEmail((String) result.get("o_email"));
+        professor.setFirstName((String) result.get("o_firstname"));
+        professor.setLastName((String) result.get("o_lastname"));
+        professor.setPassword((String) result.get("o_password"));
+        professor.setRole(Role.valueOf((String) result.get("o_role")));
+
+        return professor;
     }
 }

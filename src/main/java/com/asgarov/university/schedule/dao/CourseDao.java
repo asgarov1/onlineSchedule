@@ -4,13 +4,10 @@ import com.asgarov.university.schedule.dao.exception.DaoException;
 import com.asgarov.university.schedule.domain.Course;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
-import javax.annotation.PostConstruct;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Map;
 
 @Repository
@@ -43,21 +40,6 @@ public class CourseDao extends AbstractDao<Long, Course> {
     }
 
     @Override
-    protected String getCreateProcedureName() {
-        return "create_course";
-    }
-
-    @Override
-    protected String getUpdateProcedureName() {
-        return "update_course";
-    }
-
-    @Override
-    protected String getDeleteProcedureName() {
-        return "delete_course";
-    }
-
-    @Override
     protected Course rowMapper(final ResultSet resultSet, final int rowNum) throws SQLException {
         Course course = new Course();
         course.setId(resultSet.getLong("id"));
@@ -81,5 +63,43 @@ public class CourseDao extends AbstractDao<Long, Course> {
         courseLectureDao.deleteByCourseId(id);
         courseStudentDao.deleteByCourseId(id);
         super.deleteById(id);
+    }
+
+    @Override
+    protected String getFindAllProcedure() {
+        return "find_all_courses";
+    }
+
+    @Override
+    protected String getFindByIdProcedureName() {
+        return "find_by_id_course";
+    }
+
+    @Override
+    protected String getCreateProcedureName() {
+        return "create_course";
+    }
+
+    @Override
+    protected String getUpdateProcedureName() {
+        return "update_course";
+    }
+
+    @Override
+    protected String getDeleteProcedureName() {
+        return "delete_course";
+    }
+
+    @Override
+    protected Course instantiateFromMap(Map<String, Object> result) {
+        Course course = new Course();
+        course.setId((Long) result.get("p_id"));
+        course.setName((String) result.get("o_name"));
+
+        Long professorId = (Long) result.get("o_professor_id");
+        course.setProfessor(professorDao.findById(professorId));
+        course.setLectures(lectureDao.findAllByCourseId(course.getId()));
+        course.setRegisteredStudents(studentDao.findAllStudentsByCourseId(course.getId()));
+        return course;
     }
 }

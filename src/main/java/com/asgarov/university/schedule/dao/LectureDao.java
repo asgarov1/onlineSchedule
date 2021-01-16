@@ -8,10 +8,14 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class LectureDao extends AbstractDao<Long, Lecture> {
@@ -84,5 +88,27 @@ public class LectureDao extends AbstractDao<Long, Lecture> {
     @Override
     protected String getDeleteProcedureName() {
         return "delete_lecture";
+    }
+
+    @Override
+    protected String getFindAllProcedure() {
+        return "find_all_lectures";
+    }
+
+    @Override
+    protected String getFindByIdProcedureName() {
+        return "find_by_id_lecture";
+    }
+
+    @Override
+    protected Lecture instantiateFromMap(Map<String, Object> result) {
+        Lecture lecture = new Lecture();
+        lecture.setId((Long) result.get("p_id"));
+
+        Timestamp timestamp = (Timestamp) result.get("o_datetime");
+        lecture.setDateTime(timestamp.toLocalDateTime());
+
+        lecture.setRoom(roomDao.findById(((BigDecimal) result.get("o_room_id")).longValue()));
+        return lecture;
     }
 }

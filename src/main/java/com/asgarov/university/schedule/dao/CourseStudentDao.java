@@ -1,5 +1,6 @@
 package com.asgarov.university.schedule.dao;
 
+import com.asgarov.university.schedule.domain.CourseLecture;
 import com.asgarov.university.schedule.domain.CourseStudent;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class CourseStudentDao extends AbstractWithDeleteByCourseDao<Long, CourseStudent> {
@@ -63,5 +65,30 @@ public class CourseStudentDao extends AbstractWithDeleteByCourseDao<Long, Course
     @Override
     protected String getDeleteProcedureName() {
         return "delete_courses_students";
+    }
+
+    @Override
+    protected String getFindAllProcedure() {
+        return "find_all_courses_students";
+    }
+
+    @Override
+    protected String getFindByIdProcedureName() {
+        return "find_by_id_courses_students";
+    }
+
+    @Override
+    protected String getDeleteByCourseProcedureName() {
+        return "delete_courses_students_by_course_id";
+    }
+
+    @Override
+    protected CourseStudent instantiateFromMap(Map<String, Object> result) {
+        CourseStudent courseStudent = new CourseStudent();
+        courseStudent.setId((Long) result.get("p_id"));
+        courseStudent.setCourseId((Long) result.get("o_course_id"));
+        courseStudent.setStudentId((Long) result.get("o_student_id"));
+
+        return courseStudent;
     }
 }

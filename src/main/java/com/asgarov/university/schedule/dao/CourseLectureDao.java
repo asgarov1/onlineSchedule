@@ -1,5 +1,6 @@
 package com.asgarov.university.schedule.dao;
 
+import com.asgarov.university.schedule.domain.Course;
 import com.asgarov.university.schedule.domain.CourseLecture;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -73,5 +74,30 @@ public class CourseLectureDao extends AbstractWithDeleteByCourseDao<Long, Course
     @Override
     protected String getDeleteProcedureName() {
         return "delete_course_lectures";
+    }
+
+    @Override
+    protected String getFindAllProcedure() {
+        return "find_all_course_lectures";
+    }
+
+    @Override
+    protected String getFindByIdProcedureName() {
+        return "find_by_id_course_lectures";
+    }
+
+    @Override
+    protected String getDeleteByCourseProcedureName() {
+        return "delete_course_lectures_by_course_id";
+    }
+
+    @Override
+    protected CourseLecture instantiateFromMap(Map<String, Object> result) {
+        CourseLecture courseLecture = new CourseLecture();
+        courseLecture.setId((Long) result.get("p_id"));
+        courseLecture.setCourseId((Long) result.get("o_course_id"));
+        courseLecture.setLectureId((Long) result.get("o_lecture_id"));
+
+        return courseLecture;
     }
 }

@@ -20,25 +20,18 @@ import java.util.Map;
 @Repository
 public abstract class AbstractDao<K, T> {
 
+    public static final String ID_PARAMETER = "p_id";
     private JdbcTemplate jdbcTemplate;
 
     protected abstract T rowMapper(final ResultSet resultSet, final int rowNum) throws SQLException;
 
     protected abstract String tableName();
 
-    protected String getFindByIdQuery(K id) {
-        return "select * from " + tableName() + " where id = " + id + "";
-    }
-
-    protected String getFindAllQuery() {
-        return "select * from " + tableName() + "";
-    }
-
     public Long create(T object) {
         Map<String, Object> execute = new SimpleJdbcCall(getJdbcTemplate())
                 .withProcedureName(getCreateProcedureName())
                 .execute(getParameterMap(object));
-        return ((BigDecimal) execute.get("P_ID")).longValue();
+        return ((BigDecimal) execute.get(ID_PARAMETER)).longValue();
     }
 
     protected abstract SqlParameterSource getParameterMap(T object);
@@ -49,9 +42,19 @@ public abstract class AbstractDao<K, T> {
 
     protected abstract String getDeleteProcedureName();
 
+    protected abstract String getFindByIdProcedureName();
+
+
     public T findById(K id) {
-        return jdbcTemplate.queryForObject(getFindByIdQuery(id), this::rowMapper);
+        Map<String, Object> result = new SimpleJdbcCall(jdbcTemplate)
+                .withProcedureName(getFindByIdProcedureName())
+                .execute(new MapSqlParameterSource().addValue(ID_PARAMETER, id));
+        result.put("p_id", id);
+        return instantiateFromMap(result);
     }
+
+    protected abstract T instantiateFromMap(Map<String, Object> result);
+
 
     public void update(T object) {
         new SimpleJdbcCall(getJdbcTemplate())
@@ -62,12 +65,18 @@ public abstract class AbstractDao<K, T> {
     public void deleteById(K id) throws DaoException {
         new SimpleJdbcCall(getJdbcTemplate())
                 .withProcedureName(getDeleteProcedureName())
-                .execute(new MapSqlParameterSource().addValue("p_id", id));
+                .execute(new MapSqlParameterSource().addValue(ID_PARAMETER, id));
     }
 
     public List<T> findAll() {
-        return jdbcTemplate.query(getFindAllQuery(), this::rowMapper);
+        return (List) new SimpleJdbcCall(getJdbcTemplate())
+                .withProcedureName(getFindAllProcedure())
+                .returningResultSet("o_cursor", this::rowMapper)
+                .execute()
+                .get("o_cursor");
     }
+
+    protected abstract String getFindAllProcedure();
 
     public JdbcTemplate getJdbcTemplate() {
         return jdbcTemplate;
@@ -76,6 +85,7 @@ public abstract class AbstractDao<K, T> {
     @Autowired
     public void setJdbcTemplate(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        jdbcTemplate.setResultsMapCaseInsensitive(true);
     }
 
 }

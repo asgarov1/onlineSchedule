@@ -1,13 +1,14 @@
 package com.asgarov.university.schedule.dao;
 
-import com.asgarov.university.schedule.dao.exception.DaoException;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 
 public abstract class AbstractWithDeleteByCourseDao<K, T> extends AbstractDao<K, T> {
-    public void deleteByCourseId(final K id) {
-        getJdbcTemplate().update(getDeleteByCourseQuery(), id);
-    }
+    protected abstract String getDeleteByCourseProcedureName();
 
-    private String getDeleteByCourseQuery() {
-        return "delete from " + tableName() + " where course_id = ?";
+    public void deleteByCourseId(final K id) {
+        new SimpleJdbcCall(getJdbcTemplate())
+                .withProcedureName(getDeleteByCourseProcedureName())
+                .execute(new MapSqlParameterSource().addValue("p_course_id", id));
     }
 }

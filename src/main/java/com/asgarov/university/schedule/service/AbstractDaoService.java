@@ -30,7 +30,7 @@ public abstract class AbstractDaoService<K, T> {
     }
 
     @Loggable
-    public void update(T object) throws DaoException {
+    public void update(T object) {
         abstractDao.update(object);
     }
 
