@@ -35,7 +35,7 @@
                 <div class="row form-inline d-flex justify-content-center">
                     <div class="input-group">
                         <select required class="form-control" name="studentId" id="studentSelect">
-                            <option th:each="student: ${notRegisteredStudents}" th:text="${student.getFullName()}"
+                            <option th:each="student: ${notRegisteredStudents}" th:text="${student}"
                                     th:value="${student.id}">
                             </option>
                         </select>

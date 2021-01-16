@@ -1,46 +1,35 @@
 package com.asgarov.university.schedule.domain;
 
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
-
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-@Entity
 public class Course {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
-
-    @Column
     private String name;
-
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.REFRESH}, fetch=FetchType.EAGER)
-    @JoinTable(name = "course_student",
-            joinColumns = @JoinColumn(name = "course_id"),
-            inverseJoinColumns = @JoinColumn(name = "student_id"))
     private List<Student> registeredStudents = new ArrayList<>();
-
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH}, fetch=FetchType.EAGER)
+    ;
     private Professor professor;
-
-    @LazyCollection(LazyCollectionOption.FALSE)
-    @OneToMany
     private List<Lecture> lectures = new ArrayList<>();
 
     public Course() {
     }
 
-    public Course(String name) {
+    public Course(final String name) {
         this.name = name;
     }
 
-    public Course(String name, List<Student> registeredStudents, Professor professor, List<Lecture> lectures) {
-        this.name = name;
-        this.registeredStudents = registeredStudents;
-        this.professor = professor;
-        this.lectures = lectures;
+    public void addStudent(Student student) {
+        registeredStudents.add(student);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -75,54 +64,37 @@ public class Course {
         this.lectures = lectures;
     }
 
-    public void addStudent(Student student) {
-        registeredStudents.add(student);
-    }
-
-    public void addLecture(Lecture lecture) {
+    public void addLecture(final Lecture lecture) {
         lectures.add(lecture);
     }
 
-    public void removeStudent(Student student) {
-        registeredStudents.remove(student);
-    }
-
-    public void removeLecture(Lecture lecture) {
-        lectures.remove(lecture);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Course)) return false;
-
-        Course course = (Course) o;
-
-        if (getId() != null ? !getId().equals(course.getId()) : course.getId() != null) return false;
-        if (getName() != null ? !getName().equals(course.getName()) : course.getName() != null) return false;
-        if (getRegisteredStudents() != null ? !getRegisteredStudents().equals(course.getRegisteredStudents()) : course.getRegisteredStudents() != null)
+    public boolean equals(final Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
             return false;
-        if (getProfessor() != null ? !getProfessor().equals(course.getProfessor()) : course.getProfessor() != null)
+
+        final Course course = (Course) o;
+
+        if (!Objects.equals(id, course.id))
             return false;
-        return getLectures() != null ? getLectures().equals(course.getLectures()) : course.getLectures() == null;
+        if (!Objects.equals(name, course.name))
+            return false;
+        if (!Objects.equals(registeredStudents, course.registeredStudents))
+            return false;
+        if (!Objects.equals(professor, course.professor))
+            return false;
+        return Objects.equals(lectures, course.lectures);
     }
 
     @Override
     public int hashCode() {
-        int result = getId() != null ? getId().hashCode() : 0;
-        result = 31 * result + (getName() != null ? getName().hashCode() : 0);
-        result = 31 * result + (getRegisteredStudents() != null ? getRegisteredStudents().hashCode() : 0);
-        result = 31 * result + (getProfessor() != null ? getProfessor().hashCode() : 0);
-        result = 31 * result + (getLectures() != null ? getLectures().hashCode() : 0);
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (registeredStudents != null ? registeredStudents.hashCode() : 0);
+        result = 31 * result + (professor != null ? professor.hashCode() : 0);
+        result = 31 * result + (lectures != null ? lectures.hashCode() : 0);
         return result;
     }
 
@@ -135,5 +107,9 @@ public class Course {
                 ", professor=" + professor +
                 ", lectures=" + lectures +
                 '}';
+    }
+
+    public void removeStudent(Student student) {
+        registeredStudents.remove(student);
     }
 }

@@ -3,7 +3,8 @@
     <div class="jumbotron">
         <h1 th:text="|${course.name} lectures:|"></h1>
         <hr/>
-        <table class="table table-striped table-hover" th:unless="${#lists.isEmpty(lectures)}">
+        <table class="table table-striped table-hover" th:unless="${#lists.isEmpty(lectures)}"
+               th:with="courseName = ${courseService.findCourseByLectureId(__${lectures.get(0).id}__).name}">
             <thead class="thead-dark">
             <th>id</th>
             <th>DateTime</th>
@@ -15,7 +16,7 @@
                 <td th:text="${lecture.id}">id</td>
                 <td th:text="${lecture.dateTime}">DateTime</td>
                 <td th:text="${lecture.room}">Room</td>
-                <td th:text="${courseService.findByLectureId(__${lecture.id}__).name}">Course Name</td>
+                <td th:text="${courseName}">Course Name</td>
                 <td><a href="#" class="text-danger text-decoration-none"
                        data-toggle="modal"
                        th:attr="data-target='#confirm-delete-'+${lecture.id}">Delete</a>

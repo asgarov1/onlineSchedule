@@ -27,22 +27,22 @@
                 </td>
             </tr>
         </table>
+    </div>
 
-        <div class="container border border-dark rounded text-center">
-            <h4 th:class="mt-3">Create new room</h4>
-            <form th:action="@{/room}" method="POST" th:object="${newRoom}">
-                <div class="row form-inline d-flex justify-content-center">
-                    <div class='input-group m-3'>
-                        <input type='text' class="form-control" name="name" th:field="*{name}"
-                               placeholder="Room Name" required/>
-                    </div>
-                    <div class="input-group m-3">
-                        <button id="addRoomBtn" type="submit" class="btn btn-success btn-ok">
-                            Create Room
-                        </button>
-                    </div>
+    <div class="container border border-dark rounded text-center">
+        <h4 th:class="mt-3">Create new room</h4>
+        <form th:action="@{/room}" method="POST" th:object="${newRoom}">
+            <div class="row form-inline d-flex justify-content-center">
+                <div class='input-group m-3'>
+                    <input type='text' class="form-control" name="name" th:field="*{name}"
+                           placeholder="Room Name" required/>
                 </div>
-            </form>
-        </div>
+                <div class="input-group m-3">
+                    <button id="addRoomBtn" type="submit" class="btn btn-success btn-ok">
+                        Create Room
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
 </div>

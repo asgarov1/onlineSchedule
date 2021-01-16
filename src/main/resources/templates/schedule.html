@@ -1,9 +1,9 @@
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:include="layouts/standardLayout :: page(title='Schedule')">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:include="layouts/standardLayout :: page(title='Course')">
 
 <div class="container" th:fragment="main">
 
     <div class="jumbotron">
-        <h1 th:text="${searchedPerson} ? |Schedule for ${searchedPerson.getFullName()}| : |Schedule|">Schedule</h1>
+        <h1>Schedule</h1>
         <hr/>
         <form method="get" th:action="@{/schedule/showSchedule}" th:object="${scheduleRequestDTO}">
 
@@ -25,7 +25,7 @@
                 <div class="col-sm-3">
                     <select class="form-control" name="personIndex" id="personSelect"
                             onchange="setHiddenFields()">
-                        <option th:each="person: ${persons}" th:text="${person.getFullName()}"
+                        <option th:each="person: ${persons}" th:text="${person}"
                                 th:value="${person.role} + ' ' + ${person.id}">
                         </option>
                     </select>
@@ -55,7 +55,7 @@
                         <td th:unless="${lectureStat.index} == 0" th:text="| |">Date</td>
                         <td th:text="|${lecture.dateTime.getHour()}:${lecture.dateTime.getMinute()}|">Time</td>
                         <td th:text="${lecture.room}">Room</td>
-                        <td th:text="${courseService.findByLectureId(__${lecture.id}__).name}">Course Name</td>
+                        <td th:text="${courseService.findCourseByLectureId(__${lecture.id}__).name}">Name</td>
                     </tr>
                     </tbody>
                 </table>

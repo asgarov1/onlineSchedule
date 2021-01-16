@@ -1,21 +1,22 @@
 package com.asgarov.university.schedule.service;
 
+import com.asgarov.university.schedule.dao.StudentDao;
 import com.asgarov.university.schedule.domain.Student;
-import com.asgarov.university.schedule.repository.StudentRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class StudentService extends AbstractService<Student, Long> {
-    private final StudentRepository studentRepository;
+public class StudentService extends AbstractDaoService<Long, Student> {
 
-    public StudentService(final StudentRepository studentRepository) {
-        super(studentRepository);
-        this.studentRepository = studentRepository;
+    private StudentDao studentDao;
+
+    public StudentService(final StudentDao studentDao) {
+        super(studentDao);
+        this.studentDao = studentDao;
     }
 
-    public List<Student> findAll() {
-        return studentRepository.findAll();
+    public List<Student> findAllStudentsByCourseId(final Long id) {
+        return studentDao.findAllStudentsByCourseId(id);
     }
 }

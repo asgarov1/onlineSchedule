@@ -17,7 +17,7 @@
                 <td><a target="_blank" class="text-decoration-none"
                        th:href="@{/course/__${course.id}__/students}"
                        th:text="|Registered Students (${course.registeredStudents.size()})|">Students</a></td>
-                <td th:text="${course.professor.getFullName()}">Professor</td>
+                <td th:text="${course.professor}">Professor</td>
                 <td><a target="_blank" class="text-decoration-none"
                        th:href="@{/course/__${course.id}__/lectures}" th:text="|Lectures (${course.lectures.size()})|">Lectures</a>
                 </td>

@@ -1,36 +1,85 @@
 package com.asgarov.university.schedule.service;
 
-import com.asgarov.university.schedule.domain.Course;
-import com.asgarov.university.schedule.domain.Lecture;
-import com.asgarov.university.schedule.domain.Professor;
-import com.asgarov.university.schedule.domain.Student;
-import com.asgarov.university.schedule.repository.CourseRepository;
+import com.asgarov.university.schedule.dao.AbstractDao;
+import com.asgarov.university.schedule.dao.CourseLectureDao;
+import com.asgarov.university.schedule.dao.CourseStudentDao;
+import com.asgarov.university.schedule.domain.*;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-public class CourseService extends AbstractService<Course, Long> {
+public class CourseService extends AbstractDaoService<Long, Course> {
 
-    private final StudentService studentService;
-    private final LectureService lectureService;
-    private final CourseRepository courseRepository;
+    private CourseLectureDao courseLectureDao;
+    private CourseStudentDao courseStudentDao;
+    private StudentService studentService;
 
-    public CourseService(CourseRepository courseRepository, StudentService studentService, LectureService lectureService) {
-        super(courseRepository);
-        this.courseRepository = courseRepository;
+    public CourseService(AbstractDao<Long, Course> abstractDao, CourseLectureDao courseLectureDao, CourseStudentDao courseStudentDao, StudentService studentService) {
+        super(abstractDao);
+        this.courseLectureDao = courseLectureDao;
+        this.courseStudentDao = courseStudentDao;
         this.studentService = studentService;
-        this.lectureService = lectureService;
     }
 
     public void registerStudents(Course course, List<Student> students) {
-        students.forEach(course::addStudent);
-        update(course);
+        students.forEach(student -> {
+            courseStudentDao.create(new CourseStudent(course.getId(), student.getId()));
+            course.addStudent(student);
+        });
     }
 
+    public void registerStudent(Long courseId, Long studentId) {
+        courseStudentDao.create(new CourseStudent(courseId, studentId));
+    }
+
+    public void scheduleLectures(Course course, List<Lecture> lectures) {
+        lectures.forEach(lecture -> {
+            courseLectureDao.create(new CourseLecture(course.getId(), lecture.getId()));
+            course.addLecture(lecture);
+        });
+    }
+
+    public void scheduleLecture(Long courseId, Long lectureId) {
+        courseLectureDao.create(new CourseLecture(courseId, lectureId));
+    }
+
+    public List<Course> findStudentsCourses(final Student student) {
+        return findAll().stream()
+                .filter(course -> studentHasCourse(student, course))
+                .collect(Collectors.toList());
+    }
+
+
     public List<Course> findProfessorsCourses(final Professor professor) {
-        return courseRepository.findAllByProfessor(professor);
+        return findAll().stream()
+                .filter(course -> course.getProfessor().equals(professor))
+                .collect(Collectors.toList());
+    }
+
+    public boolean studentHasCourse(Student student, Course course) {
+        return course.getRegisteredStudents().contains(student);
+    }
+
+    public Course findCourseByLectureId(Long lectureId) {
+        return courseLectureDao.findByLectureId(lectureId)
+                .stream()
+                .map(cl -> findById(cl.getCourseId()))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+    }
+
+    public Course findCourseByLectureId(Integer lectureId) {
+        return findCourseByLectureId((long) lectureId);
+    }
+
+    public Course findCourseByLectureId(String lectureId) {
+        return findCourseByLectureId(Long.valueOf(lectureId));
+    }
+
+    public void unregisterStudent(Course course, Long studentId) {
+        courseStudentDao.deleteByStudentId(studentId);
     }
 
     public List<Student> getNotRegisteredStudents(Course course) {
@@ -39,40 +88,7 @@ public class CourseService extends AbstractService<Course, Long> {
         return notRegisteredStudents;
     }
 
-    public void registerStudent(Long courseId, Long studentId) {
-        Course course = findById(courseId);
-        course.addStudent(studentService.findById(studentId));
-        update(course);
-    }
-
-    public void scheduleLecture(Long courseId, Long lectureId) {
-        Course course = findById(courseId);
-        course.addLecture(lectureService.findById(lectureId));
-        update(course);
-    }
-
-    public void unregisterStudent(Long courseId, Long studentId) {
-        Course course = findById(courseId);
-        course.removeStudent(studentService.findById(studentId));
-        update(course);
-    }
-
-    public void removeLecture(Long courseId, Long lectureId) {
-        Course course = findById(courseId);
-        course.removeLecture(lectureService.findById(lectureId));
-        update(course);
-    }
-
-    public List<Course> findAll() {
-        return courseRepository.findAll();
-    }
-
-    public Course findByLectureId(Long lectureId) {
-        Lecture lecture = lectureService.findById(lectureId);
-        return courseRepository.findByLecturesContaining(lecture).orElseThrow(EntityNotFoundException::new);
-    }
-
-    public List<Course> findStudentsCourses(Student student) {
-        return courseRepository.findByRegisteredStudentsContains(student);
+    public void removeLecture(Long lectureId) {
+        courseLectureDao.deleteByLectureId(lectureId);
     }
 }

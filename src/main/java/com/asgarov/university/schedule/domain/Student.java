@@ -1,18 +1,8 @@
 package com.asgarov.university.schedule.domain;
 
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-
-@Entity
-@Table(name = "student")
 public class Student extends Person {
 
-    @Enumerated(EnumType.STRING)
     private Degree degree;
-
-    @ManyToMany(mappedBy = "registeredStudents", fetch = FetchType.EAGER)
-    private final List<Course> courses = new ArrayList<>();
 
     {
         role = Role.STUDENT;
@@ -44,46 +34,36 @@ public class Student extends Person {
         this.degree = degree;
     }
 
-    public List<Course> getCourses() {
-        return courses;
-    }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Student)) return false;
-        if (!super.equals(o)) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        if (!super.equals(o))
+            return false;
 
         Student student = (Student) o;
 
-        if (getDegree() != student.getDegree()) return false;
-        return courses.equals(student.courses);
+        return degree == student.degree;
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + (getDegree() != null ? getDegree().hashCode() : 0);
-        result = 31 * result + courses.hashCode();
+        result = 31 * result + (degree != null ? degree.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return firstName + " " + lastName;
     }
 
     public enum Degree {
         BACHELOR,
         MASTER,
         DOCTORATE;
-    }
-
-    @Override
-    public String toString() {
-        return "Student{" +
-                "id=" + getId() +
-                ", degree=" + degree +
-                ", role=" + role +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                '}';
     }
 }

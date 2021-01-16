@@ -183,7 +183,7 @@
                         </div>
                         <div class="col-sm-3">
                             <input type="text" class="form-control" readonly
-                                   th:value="${courseService.findByLectureId(__${lecture.id}__).name}"/>
+                                   th:value="${courseService.findCourseByLectureId(__${lecture.id}__).name}"/>
                         </div>
                     </div>
                 </div>

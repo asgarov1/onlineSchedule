@@ -1,5 +1,6 @@
 package com.asgarov.university.schedule.controller;
 
+import com.asgarov.university.schedule.dao.exception.DaoException;
 import com.asgarov.university.schedule.domain.Course;
 import com.asgarov.university.schedule.domain.Lecture;
 import com.asgarov.university.schedule.domain.Room;
@@ -7,13 +8,13 @@ import com.asgarov.university.schedule.domain.dto.LectureDTO;
 import com.asgarov.university.schedule.service.CourseService;
 import com.asgarov.university.schedule.service.LectureService;
 import com.asgarov.university.schedule.service.RoomService;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -26,9 +27,9 @@ import java.util.stream.IntStream;
 @RequestMapping("lecture")
 public class LectureController {
 
-    private final LectureService lectureService;
-    private final RoomService roomService;
-    private final CourseService courseService;
+    private LectureService lectureService;
+    private RoomService roomService;
+    private CourseService courseService;
     private final static Integer AMOUNT_PER_PAGE = 10;
 
     public LectureController(LectureService lectureService, RoomService roomService, CourseService courseService) {
@@ -71,10 +72,10 @@ public class LectureController {
     public String searchLecturesById(@RequestParam Long id, Model model) {
         try {
             model.addAttribute("lectures", Collections.singletonList(lectureService.findById(id)));
-        } catch (EntityNotFoundException e) {
-            //nothing to handle
+            model.addAttribute("lectureDTO", new LectureDTO());
+        } catch (EmptyResultDataAccessException e) {
+            // Nothing found under the id - nothing to handle
         }
-        model.addAttribute("lectureDTO", new LectureDTO());
         return "lecture";
     }
 
@@ -83,26 +84,30 @@ public class LectureController {
         LocalDate localDate = LocalDate.parse(lectureDTO.getDate());
         LocalTime localTime = LocalTime.parse(lectureDTO.getTime());
         LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
-        Lecture lecture = new Lecture(localDateTime, roomService.findById(lectureDTO.getRoomId()));
-        lectureService.create(lecture);
-        courseService.scheduleLecture(lectureDTO.getCourseId(), lecture.getId());
+        Long lectureId = lectureService.create(new Lecture(localDateTime, roomService.findById(lectureDTO.getRoomId())));
+        courseService.scheduleLecture(lectureDTO.getCourseId(), lectureId);
         return "redirect:/lecture";
     }
 
     @DeleteMapping("/{id}")
-    public String deleteLecture(@PathVariable Long id) {
+    public String deleteLecture(@PathVariable Long id) throws DaoException {
         lectureService.deleteById(id);
         return "redirect:/lecture";
     }
 
     @PutMapping("/{id}")
-    public String updateLecture(@PathVariable Long id, LectureDTO lectureDTO) {
+    public String updateLecture(@PathVariable Long id, LectureDTO lectureDTO) throws DaoException {
         Lecture lecture = lectureService.findById(id);
         LocalDateTime dateTime = LocalDateTime.of(LocalDate.parse(lectureDTO.getDate()), LocalTime.parse(lectureDTO.getTime()));
         lecture.setDateTime(dateTime);
         lecture.setRoom(roomService.findById(lectureDTO.getRoomId()));
         lectureService.update(lecture);
         return "redirect:/lecture";
+    }
+
+    @ModelAttribute("courseService")
+    public CourseService courseService() {
+        return courseService;
     }
 
     @ModelAttribute("rooms")
@@ -113,10 +118,5 @@ public class LectureController {
     @ModelAttribute("courses")
     public List<Course> courses() {
         return courseService.findAll();
-    }
-
-    @ModelAttribute("courseService")
-    public CourseService courseService() {
-        return courseService;
     }
 }

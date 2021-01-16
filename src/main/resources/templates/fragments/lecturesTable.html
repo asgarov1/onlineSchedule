@@ -13,7 +13,7 @@
             <td th:text="${lecture.id}">id</td>
             <td th:text="${lecture.dateTime}">DateTime</td>
             <td th:text="${lecture.room}">Room</td>
-            <td th:text="${courseService.findByLectureId(__${lecture.id}__).name}">Course Name</td>
+            <td th:text="${courseService.findCourseByLectureId(__${lecture.id}__).name}">Course Name</td>
             <td><a href="#" class="text-decoration-none"
                    data-toggle="modal"
                    th:attr="data-target='#edit-'+${lecture.id}">Edit</a>
@@ -29,7 +29,7 @@
             <td th:text="${lecture.id}">id</td>
             <td th:text="${lecture.dateTime}">DateTime</td>
             <td th:text="${lecture.room}">Room</td>
-            <td th:text="${courseService.findByLectureId(__${lecture.id}__).name}">Course Name</td>
+            <td th:text="${courseService.findCourseByLectureId(__${lecture.id}__).name}">Course Name</td>
             <td><a href="#" class="text-decoration-none"
                    data-toggle="modal"
                    th:attr="data-target='#edit-'+${lecture.id}">Edit</a>

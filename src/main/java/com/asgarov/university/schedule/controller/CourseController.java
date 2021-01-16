@@ -1,5 +1,6 @@
 package com.asgarov.university.schedule.controller;
 
+import com.asgarov.university.schedule.dao.exception.DaoException;
 import com.asgarov.university.schedule.domain.Course;
 import com.asgarov.university.schedule.domain.Lecture;
 import com.asgarov.university.schedule.domain.Professor;
@@ -8,11 +9,11 @@ import com.asgarov.university.schedule.service.CourseService;
 import com.asgarov.university.schedule.service.LectureService;
 import com.asgarov.university.schedule.service.ProfessorService;
 import com.asgarov.university.schedule.service.RoomService;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -22,10 +23,10 @@ import java.util.List;
 @Controller
 @RequestMapping("course")
 public class CourseController {
-    private final CourseService courseService;
-    private final ProfessorService professorService;
-    private final RoomService roomService;
-    private final LectureService lectureService;
+    private CourseService courseService;
+    private ProfessorService professorService;
+    private RoomService roomService;
+    private LectureService lectureService;
 
     public CourseController(CourseService courseService, ProfessorService professorService, RoomService roomService, LectureService lectureService) {
         this.courseService = courseService;
@@ -44,8 +45,8 @@ public class CourseController {
     public String searchCoursesById(@RequestParam Long id, Model model) {
         try {
             model.addAttribute("courses", Collections.singletonList(courseService.findById(id)));
-        } catch (EntityNotFoundException e) {
-            //nothing to handle
+        } catch (EmptyResultDataAccessException e) {
+            // Nothing found under the id - nothing to handle
         }
         return "course";
     }
@@ -59,9 +60,8 @@ public class CourseController {
     @PostMapping("/{id}/addLecture")
     public String addLecture(@PathVariable Long id, LectureDTO lectureDTO) {
         LocalDateTime localDateTime = LocalDateTime.of(LocalDate.parse(lectureDTO.getDate()), LocalTime.parse(lectureDTO.getTime()));
-        Lecture lecture = new Lecture(localDateTime, roomService.findById(lectureDTO.getRoomId()));
-        lectureService.create(lecture);
-        courseService.scheduleLecture(id, lecture.getId());
+        Long lectureId = lectureService.create(new Lecture(localDateTime, roomService.findById(lectureDTO.getRoomId())));
+        courseService.scheduleLecture(id, lectureId);
         return "redirect:/course/" + id + "/lectures";
     }
 
@@ -75,7 +75,8 @@ public class CourseController {
     }
 
     @PutMapping("/{id}")
-    public String updateCourse(@PathVariable Long id, @RequestParam String courseName, @RequestParam Long professorId) {
+    public String updateCourse(@PathVariable Long id, @RequestParam String courseName, @RequestParam Long professorId)
+            throws DaoException {
         Course course = courseService.findById(id);
         course.setName(courseName);
         course.setProfessor(professorService.findById(professorId));
@@ -104,21 +105,27 @@ public class CourseController {
     }
 
     @DeleteMapping("/{id}")
-    public String deleteCourse(@PathVariable Long id, Model model) {
+    public String deleteCourse(@PathVariable Long id, Model model) throws DaoException {
         courseService.deleteById(id);
         return "redirect:/course";
     }
 
     @DeleteMapping("/{id}/students/{studentId}")
     public String removeStudentFromCourse(@PathVariable Long id, @PathVariable Long studentId) {
-        courseService.unregisterStudent(id, studentId);
+        Course course = courseService.findById(id);
+        courseService.unregisterStudent(course, studentId);
         return "redirect:/course/" + id + "/students";
     }
 
     @DeleteMapping("{id}/lectures/{lectureId}")
     public String removeLectureFromCourse(@PathVariable Long id, @PathVariable Long lectureId) {
-        courseService.removeLecture(id, lectureId);
+        courseService.removeLecture(lectureId);
         return "redirect:/course/" + id + "/lectures";
+    }
+
+    @ModelAttribute("courseService")
+    public CourseService courseService() {
+        return courseService;
     }
 
     @ModelAttribute("professors")
@@ -126,8 +133,4 @@ public class CourseController {
         return professorService.findAll();
     }
 
-    @ModelAttribute("courseService")
-    public CourseService courseService() {
-        return courseService;
-    }
 }

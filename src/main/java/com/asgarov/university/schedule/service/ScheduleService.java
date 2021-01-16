@@ -1,6 +1,7 @@
 package com.asgarov.university.schedule.service;
 
 import com.asgarov.university.schedule.domain.*;
+import com.asgarov.university.schedule.domain.dto.ScheduleRequestDTO;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -10,9 +11,9 @@ import java.util.stream.Collectors;
 @Service
 public class ScheduleService {
 
-    private final CourseService courseService;
-    private final StudentService studentService;
-    private final ProfessorService professorService;
+    private CourseService courseService;
+    private StudentService studentService;
+    private ProfessorService professorService;
 
     public ScheduleService(CourseService courseService, StudentService studentService, ProfessorService professorService) {
         this.courseService = courseService;
@@ -50,7 +51,7 @@ public class ScheduleService {
         List<DaySchedule> daySchedules = getPersonsSchedule(person);
         return daySchedules.stream()
                 .filter(daySchedule -> daySchedule.getLocalDate().equals(LocalDate.now()))
-                .findAny()
+                .findFirst()
                 .orElseThrow(NoSuchElementException::new);
     }
 
@@ -61,4 +62,18 @@ public class ScheduleService {
                 .filter(daySchedule -> daySchedule.getLocalDate().isBefore(dateTo))
                 .collect(Collectors.toList());
     }
+
+    public List<DaySchedule> getSchedule(ScheduleRequestDTO scheduleRequest) {
+        LocalDate from = LocalDate.parse(scheduleRequest.getDateFrom());
+        LocalDate to = LocalDate.parse(scheduleRequest.getDateTo());
+
+        if (scheduleRequest.getRole().equals(Role.STUDENT.toString())) {
+            Student student = studentService.findById(scheduleRequest.getId());
+            return getSchedule(student, from, to);
+        } else {
+            Professor professor = professorService.findById(scheduleRequest.getId());
+            return getSchedule(professor, from, to);
+        }
+    }
+
 }

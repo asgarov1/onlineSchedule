@@ -1,7 +1,6 @@
 package com.asgarov.university.schedule.data;
 
 import com.asgarov.university.schedule.domain.*;
-import com.asgarov.university.schedule.repository.*;
 import com.asgarov.university.schedule.service.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -11,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-@Component
+//@Component
 public class DataGenerator implements CommandLineRunner {
 
     private final ProfessorService professorService;
@@ -34,18 +33,18 @@ public class DataGenerator implements CommandLineRunner {
     }
 
     public void generateUniversityTestData() {
-        roomService.saveAll(generateRooms("Room A1", "Room A2", "Room A3", "Room A4", "Room B1", "Room B2",
+        roomService.createAll(generateRooms("Room A1", "Room A2", "Room A3", "Room A4", "Room B1", "Room B2",
                 "Room B3", "Room B4"));
-        studentService.saveAll(generateStudents("Mark Zukerberg", "Joshua Bloch", "Bill Gates",
-                "Elon Musk", "Nikola Tesla"));
-
-        professorService.saveAll(generateLecturers("Vasya Pupkin", "Petya Pushkin", "Sema Sirkin",
-                "Charles Xavier", "Linus Torvalds", "Albus Dumbledore"));
-
-        courseService.saveAll(generatesCourses("Informatics 101", "Algorithmic Thinking", "JavaEE",
-                "C++ in Robotics", "Data Science", "Hacking with Python", "Architecture of Networks",
-                "Game Development with C#", "Ethical Hacking", "Non-ethical Hacking", "Programming Architectural Solutions",
-                "Agile Methodologies"));
+//        studentService.createAll(generateStudents("Mark Zukerberg", "Joshua Bloch", "Bill Gates",
+//                "Elon Musk", "Nikola Tesla"));
+//
+//        professorService.createAll(generateLecturers("Vasya Pupkin", "Petya Pushkin", "Sema Sirkin",
+//                "Charles Xavier", "Linus Torvalds", "Albus Dumbledore"));
+//
+//        courseService.createAll(generatesCourses("Informatics 101", "Algorithmic Thinking", "JavaEE",
+//                "C++ in Robotics", "Data Science", "Hacking with Python", "Architecture of Networks",
+//                "Game Development with C#", "Ethical Hacking", "Non-ethical Hacking", "Programming Architectural Solutions",
+//                "Agile Methodologies"));
     }
 
     private List<Course> generatesCourses(String... courseNames) {
@@ -80,7 +79,7 @@ public class DataGenerator implements CommandLineRunner {
         for (int i = 0; i < amount; i++) {
             lectures.add(new Lecture(getRandomDateTime(), getRandomRoom()));
         }
-        lectureService.saveAll(lectures);
+        lectureService.createAll(lectures);
         return lectures;
     }
 
