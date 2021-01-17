@@ -78,7 +78,7 @@ public class CourseStudentDao extends AbstractWithDeleteByCourseDao<Long, Course
     @Override
     protected CourseStudent instantiateFromMap(Map<String, Object> result) {
         CourseStudent courseStudent = new CourseStudent();
-        courseStudent.setId((Long) result.get("p_id"));
+        courseStudent.setId((Long) result.get("o_id"));
         courseStudent.setCourseId((Long) result.get("o_course_id"));
         courseStudent.setStudentId((Long) result.get("o_student_id"));
 

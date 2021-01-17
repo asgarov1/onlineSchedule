@@ -78,7 +78,7 @@ public class CourseLectureDao extends AbstractWithDeleteByCourseDao<Long, Course
     @Override
     protected CourseLecture instantiateFromMap(Map<String, Object> result) {
         CourseLecture courseLecture = new CourseLecture();
-        courseLecture.setId((Long) result.get("p_id"));
+        courseLecture.setId((Long) result.get("o_id"));
         courseLecture.setCourseId((Long) result.get("o_course_id"));
         courseLecture.setLectureId((Long) result.get("o_lecture_id"));
 

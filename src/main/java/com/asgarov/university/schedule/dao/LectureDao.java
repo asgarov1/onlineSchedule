@@ -92,7 +92,7 @@ public class LectureDao extends AbstractDao<Long, Lecture> {
     @Override
     protected Lecture instantiateFromMap(Map<String, Object> result) {
         Lecture lecture = new Lecture();
-        lecture.setId((Long) result.get("p_id"));
+        lecture.setId((Long) result.get("o_id"));
 
         Timestamp timestamp = (Timestamp) result.get("o_datetime");
         lecture.setDateTime(timestamp.toLocalDateTime());

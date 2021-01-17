@@ -4,9 +4,7 @@ public class Student extends Person {
 
     private Degree degree;
 
-    {
-        role = Role.STUDENT;
-    }
+    { role = Role.STUDENT; }
 
     public Student() {
     }

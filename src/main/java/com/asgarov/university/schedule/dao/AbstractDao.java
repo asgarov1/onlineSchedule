@@ -41,14 +41,14 @@ public abstract class AbstractDao<K, T> {
         Map<String, Object> execute = new SimpleJdbcCall(getJdbcTemplate())
                 .withProcedureName(getCreateProcedureName())
                 .execute(getParameterMap(object));
-        return ((BigDecimal) execute.get(ID_PARAMETER)).longValue();
+        return ((BigDecimal) execute.get("o_id")).longValue();
     }
 
     public T findById(K id) {
         Map<String, Object> result = new SimpleJdbcCall(jdbcTemplate)
                 .withProcedureName(getFindByIdProcedureName())
                 .execute(new MapSqlParameterSource().addValue(ID_PARAMETER, id));
-        result.put("p_id", id);
+        result.put("o_id", id);
         return instantiateFromMap(result);
     }
 

@@ -2,15 +2,15 @@ package com.asgarov.university.schedule.dao;
 
 
 import com.asgarov.university.schedule.dao.exception.DaoException;
-import com.asgarov.university.schedule.domain.*;
+import com.asgarov.university.schedule.domain.CourseStudent;
+import com.asgarov.university.schedule.domain.Student;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,9 +19,13 @@ import java.util.Map;
 public class StudentDao extends AbstractDao<Long, Student> {
 
     private final CourseStudentDao courseStudentDao;
+    private final RoleDao roleDao;
+    private final DegreeDao degreeDao;
 
-    public StudentDao(final CourseStudentDao courseStudentDao) {
+    public StudentDao(CourseStudentDao courseStudentDao, RoleDao roleDao, DegreeDao degreeDao) {
         this.courseStudentDao = courseStudentDao;
+        this.roleDao = roleDao;
+        this.degreeDao = degreeDao;
     }
 
     @Override
@@ -32,8 +36,8 @@ public class StudentDao extends AbstractDao<Long, Student> {
         student.setFirstName(resultSet.getString("firstName"));
         student.setLastName(resultSet.getString("lastName"));
         student.setPassword(resultSet.getString("password"));
-        student.setRole(Role.valueOf(resultSet.getString("role")));
-        student.setDegree(Student.Degree.valueOf(resultSet.getString("degree")));
+        student.setRole(roleDao.findById(resultSet.getLong("role_id")));
+        student.setDegree(degreeDao.findById(resultSet.getLong("degree_id")));
         return student;
     }
 
@@ -57,8 +61,8 @@ public class StudentDao extends AbstractDao<Long, Student> {
                 .addValue("p_firstname", student.getFirstName())
                 .addValue("p_lastname", student.getLastName())
                 .addValue("p_password", student.getPassword())
-                .addValue("p_role", student.getRole())
-                .addValue("p_degree", student.getDegree())
+                .addValue("p_role", student.getRole().ordinal())
+                .addValue("p_degree", student.getDegree().ordinal())
                 .addValue("p_id", student.getId());
     }
 
@@ -91,13 +95,13 @@ public class StudentDao extends AbstractDao<Long, Student> {
     protected Student instantiateFromMap(Map<String, Object> result) {
         Student student = new Student();
 
-        student.setId((Long) result.get("p_id"));
+        student.setId((Long) result.get("o_id"));
         student.setEmail((String) result.get("o_email"));
         student.setFirstName((String) result.get("o_firstname"));
         student.setLastName((String) result.get("o_lastname"));
         student.setPassword((String) result.get("o_password"));
-        student.setRole(Role.valueOf((String) result.get("o_role")));
-        student.setDegree(Student.Degree.valueOf((String) result.get("o_degree")));
+        student.setRole(roleDao.findById(((BigDecimal) result.get("o_role")).longValue()));
+        student.setDegree(degreeDao.findById(((BigDecimal) result.get("o_degree")).longValue()));
 
         return student;
     }

@@ -89,7 +89,7 @@ public class CourseDao extends AbstractDao<Long, Course> {
     @Override
     protected Course instantiateFromMap(Map<String, Object> result) {
         Course course = new Course();
-        course.setId((Long) result.get("p_id"));
+        course.setId((Long) result.get("o_id"));
         course.setName((String) result.get("o_name"));
 
         Long professorId = ((BigDecimal) result.get("o_professor_id")).longValue();

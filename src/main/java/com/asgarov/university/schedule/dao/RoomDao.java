@@ -55,7 +55,7 @@ public class RoomDao extends AbstractDao<Long, Room> {
     @Override
     protected Room instantiateFromMap(Map<String, Object> result) {
         Room room = new Room();
-        room.setId((Long) result.get("p_id"));
+        room.setId((Long) result.get("o_id"));
         room.setName((String) result.get("o_name"));
         return room;
     }
