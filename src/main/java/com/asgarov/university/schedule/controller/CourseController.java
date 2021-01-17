@@ -23,10 +23,10 @@ import java.util.List;
 @Controller
 @RequestMapping("course")
 public class CourseController {
-    private CourseService courseService;
-    private ProfessorService professorService;
-    private RoomService roomService;
-    private LectureService lectureService;
+    private final CourseService courseService;
+    private final ProfessorService professorService;
+    private final RoomService roomService;
+    private final LectureService lectureService;
 
     public CourseController(CourseService courseService, ProfessorService professorService, RoomService roomService, LectureService lectureService) {
         this.courseService = courseService;

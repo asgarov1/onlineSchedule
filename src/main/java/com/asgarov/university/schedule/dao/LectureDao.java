@@ -3,9 +3,11 @@ package com.asgarov.university.schedule.dao;
 import com.asgarov.university.schedule.dao.exception.DaoException;
 import com.asgarov.university.schedule.domain.CourseLecture;
 import com.asgarov.university.schedule.domain.Lecture;
+import com.asgarov.university.schedule.domain.LectureView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -96,5 +98,22 @@ public class LectureDao extends AbstractDao<Long, Lecture> {
 
         lecture.setRoom(roomDao.findById(((BigDecimal) result.get("o_room_id")).longValue()));
         return lecture;
+    }
+
+    public List<LectureView> findAllLectureView() {
+        return (List) new SimpleJdbcCall(getJdbcTemplate())
+                .withProcedureName("find_all_lecture_view")
+                .returningResultSet("o_cursor", this::mapLectureView)
+                .execute()
+                .get("o_cursor");
+    }
+
+    protected LectureView mapLectureView(final ResultSet resultSet, final int rowNum) throws SQLException {
+        LectureView lectureView = new LectureView();
+        lectureView.setId(resultSet.getLong("id"));
+        lectureView.setDateTime(resultSet.getTimestamp("datetime").toLocalDateTime());
+        lectureView.setRoomName(resultSet.getString("room_name"));
+        lectureView.setCourseName(resultSet.getString("course_name"));
+        return lectureView;
     }
 }

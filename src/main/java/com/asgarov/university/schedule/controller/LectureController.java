@@ -3,6 +3,7 @@ package com.asgarov.university.schedule.controller;
 import com.asgarov.university.schedule.dao.exception.DaoException;
 import com.asgarov.university.schedule.domain.Course;
 import com.asgarov.university.schedule.domain.Lecture;
+import com.asgarov.university.schedule.domain.LectureView;
 import com.asgarov.university.schedule.domain.Room;
 import com.asgarov.university.schedule.domain.dto.LectureDTO;
 import com.asgarov.university.schedule.service.CourseService;
@@ -53,7 +54,7 @@ public class LectureController {
             pageSize = size;
         }
 
-        Page<Lecture> lecturePage = lectureService.findPaginated(PageRequest.of(currentPage - 1, pageSize));
+        Page<LectureView> lecturePage = lectureService.findPaginated(PageRequest.of(currentPage - 1, pageSize));
         model.addAttribute("lecturePage", lecturePage);
         model.addAttribute("lectureDTO", new LectureDTO());
 

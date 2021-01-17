@@ -17,9 +17,9 @@ import java.util.List;
 @RequestMapping("schedule")
 public class ScheduleController {
 
-    private ScheduleService scheduleService;
-    private CourseService courseService;
-    private PersonService personService;
+    private final ScheduleService scheduleService;
+    private final CourseService courseService;
+    private final PersonService personService;
 
     public ScheduleController(ScheduleService scheduleService, CourseService courseService, PersonService personService) {
         this.scheduleService = scheduleService;

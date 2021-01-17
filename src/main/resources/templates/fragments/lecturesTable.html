@@ -12,8 +12,8 @@
         <tr th:if="${lecturePage}" th:each="lecture: ${lecturePage?.content}">
             <td th:text="${lecture.id}">id</td>
             <td th:text="${lecture.dateTime}">DateTime</td>
-            <td th:text="${lecture.room}">Room</td>
-            <td>Course Name</td>
+            <td th:text="${lecture.roomName}">Room Name</td>
+            <td th:text="${lecture.courseName}">Course Name</td>
             <td><a href="#" class="text-decoration-none"
                    data-toggle="modal"
                    th:attr="data-target='#edit-'+${lecture.id}">Edit</a>
