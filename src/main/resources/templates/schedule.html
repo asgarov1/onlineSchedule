@@ -53,7 +53,9 @@
                     <tr th:each="lecture : ${daySchedule.getLectures()}">
                         <td th:if="${lectureStat.index} == 0" th:text="${daySchedule.localDate}">Date</td>
                         <td th:unless="${lectureStat.index} == 0" th:text="| |">Date</td>
-                        <td th:text="|${lecture.dateTime.getHour()}:${lecture.dateTime.getMinute()}|">Time</td>
+                        <td th:text="|${#numbers.formatDecimal(__${lecture.dateTime.getHour()}__, 2, 0)}:${#numbers.formatDecimal(__${lecture.dateTime.getMinute()}__, 2, 0)}|">
+                            Time
+                        </td>
                         <td th:text="${lecture.roomName}">Room</td>
                         <td th:text="${lecture.courseName}">Course Name</td>
                     </tr>
