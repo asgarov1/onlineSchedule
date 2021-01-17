@@ -7,13 +7,13 @@ import java.util.Objects;
 
 public class DaySchedule {
 
-    private List<Lecture> lectures = new ArrayList<>();
+    private List<LectureView> lectures = new ArrayList<>();
     private LocalDate localDate;
 
     public DaySchedule() {
     }
 
-    public DaySchedule(LocalDate localDate, List<Lecture> lectures) {
+    public DaySchedule(LocalDate localDate, List<LectureView> lectures) {
         this.localDate = localDate;
         this.lectures = lectures;
     }
@@ -26,11 +26,11 @@ public class DaySchedule {
         this.localDate = localDate;
     }
 
-    public List<Lecture> getLectures() {
+    public List<LectureView> getLectures() {
         return lectures;
     }
 
-    public void setLectures(List<Lecture> lectures) {
+    public void setLectures(List<LectureView> lectures) {
         this.lectures = lectures;
     }
 

@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -105,6 +106,25 @@ public class LectureDao extends AbstractDao<Long, Lecture> {
                 .withProcedureName("find_all_lecture_view")
                 .returningResultSet("o_cursor", this::mapLectureView)
                 .execute()
+                .get("o_cursor");
+    }
+
+    public List<LectureView> findAllLecturesForStudent(Long studentId, LocalDate from, LocalDate to) {
+        return findAllLectureViews(studentId, from, to, "find_all_lectures_for_student");
+    }
+
+    public List<LectureView> findAllLecturesForProfessor(Long professorId, LocalDate from, LocalDate to) {
+        return findAllLectureViews(professorId, from, to, "find_all_lectures_for_professor");
+    }
+
+    public List<LectureView> findAllLectureViews(Long id, LocalDate from, LocalDate to, String procedureName) {
+        return (List) new SimpleJdbcCall(getJdbcTemplate())
+                .withProcedureName(procedureName)
+                .returningResultSet("o_cursor", this::mapLectureView)
+                .execute(new MapSqlParameterSource()
+                        .addValue("p_id", id)
+                        .addValue("p_datetime_from", from)
+                        .addValue("p_datetime_until", to))
                 .get("o_cursor");
     }
 

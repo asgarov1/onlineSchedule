@@ -464,3 +464,39 @@ BEGIN
         SELECT * FROM course_lectures WHERE course_id = p_course_id;
 END;
 /
+
+CREATE OR REPLACE PROCEDURE find_all_lectures_for_student(p_id IN student.ID%TYPE,
+                                                          p_datetime_from IN lecture.DATETIME%TYPE,
+                                                          p_datetime_until IN lecture.DATETIME%TYPE,
+                                                          o_cursor OUT SYS_REFCURSOR)
+AS
+BEGIN
+    OPEN o_cursor FOR
+        SELECT id,
+               datetime,
+               room_name,
+               course_name
+        FROM schedule_view s
+        where s.STUDENT_ID = p_id
+          and datetime >= p_datetime_from
+          and datetime <= p_datetime_until;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE find_all_lectures_for_professor(p_id IN professor.ID%TYPE,
+                                                            p_datetime_from IN lecture.DATETIME%TYPE,
+                                                            p_datetime_until IN lecture.DATETIME%TYPE,
+                                                            o_cursor OUT SYS_REFCURSOR)
+AS
+BEGIN
+    OPEN o_cursor FOR
+        SELECT id,
+               datetime,
+               room_name,
+               course_name
+        FROM schedule_view s
+        where s.PROFESSOR_ID = p_id
+          and datetime >= p_datetime_from
+          and datetime <= p_datetime_until;
+END;
+/

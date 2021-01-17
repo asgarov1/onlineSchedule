@@ -9,6 +9,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,7 +25,6 @@ public class LectureService extends AbstractDaoService<Long, Lecture> {
     }
 
     public Page<LectureView> findPaginated(Pageable pageable) {
-//        TODO create lecture views here
         List<LectureView> lectures = findAllLectureView();
         int pageSize = pageable.getPageSize();
         int currentPage = pageable.getPageNumber();
@@ -42,5 +43,13 @@ public class LectureService extends AbstractDaoService<Long, Lecture> {
 
     private List<LectureView> findAllLectureView() {
         return lectureDao.findAllLectureView();
+    }
+
+    public List<LectureView> findAllLectureForStudent(Long studentId, LocalDate from, LocalDate to) {
+        return lectureDao.findAllLecturesForStudent(studentId, from, to);
+    }
+
+    public List<LectureView> findAllLectureForProfessor(Long professorId, LocalDate from, LocalDate to) {
+        return lectureDao.findAllLecturesForProfessor(professorId, from, to);
     }
 }
