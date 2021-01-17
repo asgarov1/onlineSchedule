@@ -27,11 +27,11 @@ public class StudentController {
         return "student";
     }
 
-    @PostMapping("/searchStudentsById")
+    @GetMapping("/searchStudentsById")
     public String searchStudentsById(@RequestParam Long id, Model model) {
         try {
             model.addAttribute("students", Collections.singletonList(studentService.findById(id)));
-        } catch (EmptyResultDataAccessException e) {
+        } catch (Exception e) {
             // Nothing found under the id - nothing to handle
         }
         return "student";

@@ -30,11 +30,11 @@ public class ProfessorController {
         return "professor";
     }
 
-    @PostMapping("/searchProfessorsById")
+    @GetMapping("/searchProfessorsById")
     public String searchProfessorsById(@RequestParam Long id, Model model) {
         try {
             model.addAttribute("professors", Collections.singletonList(professorService.findById(id)));
-        } catch (EmptyResultDataAccessException e) {
+        } catch (Exception e) {
             // Nothing found under the id - nothing to handle
         }
         return "professor";

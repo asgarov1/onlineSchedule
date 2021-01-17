@@ -28,11 +28,11 @@ public class RoomController {
         return "room";
     }
 
-    @PostMapping("/searchRoomsById")
+    @GetMapping("/searchRoomsById")
     public String searchRoomsById(@RequestParam Long id, Model model) {
         try {
             model.addAttribute("rooms", Collections.singletonList(roomService.findById(id)));
-        } catch (EmptyResultDataAccessException e) {
+        } catch (Exception e) {
             // Nothing found under the id - nothing to handle
         }
         return "room";

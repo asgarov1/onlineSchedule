@@ -4,7 +4,7 @@
         <h1>Course Operations:</h1>
         <hr/>
         <div class="form-row">
-            <form method="post" th:action="@{/course/searchCoursesById/}">
+            <form method="get" th:action="@{/course/searchCoursesById/}">
                 <div class="form-group input-group col-sm-10">
                     <input type="text" name="id" class="form-control" placeholder="enter the id" required>
                     <div class="input-group-append">

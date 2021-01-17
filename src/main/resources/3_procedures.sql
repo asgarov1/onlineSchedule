@@ -510,3 +510,12 @@ BEGIN
         SELECT * FROM courses_students WHERE course_id = p_course_id;
 END;
 /
+
+CREATE OR REPLACE PROCEDURE find_by_course_id_course_lectures(p_course_id IN course.ID%TYPE,
+                                                              o_cursor OUT SYS_REFCURSOR)
+AS
+BEGIN
+    OPEN o_cursor FOR
+        SELECT * FROM course_lectures WHERE course_id = p_course_id;
+END;
+/

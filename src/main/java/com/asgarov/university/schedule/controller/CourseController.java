@@ -41,11 +41,11 @@ public class CourseController {
         return "course";
     }
 
-    @PostMapping("/searchCoursesById")
+    @GetMapping("/searchCoursesById")
     public String searchCoursesById(@RequestParam Long id, Model model) {
         try {
             model.addAttribute("courses", Collections.singletonList(courseService.findById(id)));
-        } catch (EmptyResultDataAccessException e) {
+        } catch (Exception e) {
             // Nothing found under the id - nothing to handle
         }
         return "course";

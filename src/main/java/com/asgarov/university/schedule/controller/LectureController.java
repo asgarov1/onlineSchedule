@@ -71,9 +71,9 @@ public class LectureController {
     @GetMapping("/searchLecturesById")
     public String searchLecturesById(@RequestParam Long id, Model model) {
         try {
-            model.addAttribute("lectures", Collections.singletonList(lectureService.findById(id)));
             model.addAttribute("lectureDTO", new LectureDTO());
-        } catch (EmptyResultDataAccessException e) {
+            model.addAttribute("lectures", Collections.singletonList(lectureService.findById(id)));
+        } catch (Exception e) {
             // Nothing found under the id - nothing to handle
         }
         return "lecture";
