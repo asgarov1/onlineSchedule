@@ -21,6 +21,10 @@ public abstract class Person {
         this.password = password;
     }
 
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
+
     public Long getId() {
         return id;
     }

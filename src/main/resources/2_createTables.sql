@@ -1,3 +1,4 @@
+alter user GUI quota 50m on system;
 ALTER SESSION SET CURRENT_SCHEMA = GUI;
 
 CREATE TABLE professor (

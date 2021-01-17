@@ -465,6 +465,14 @@ BEGIN
 END;
 /
 
+CREATE OR REPLACE PROCEDURE find_all_lecture_view(o_cursor OUT SYS_REFCURSOR)
+AS
+BEGIN
+    OPEN o_cursor FOR
+        SELECT * FROM lecture_view;
+END;
+/
+
 CREATE OR REPLACE PROCEDURE find_all_lectures_for_student(p_id IN student.ID%TYPE,
                                                           p_datetime_from IN lecture.DATETIME%TYPE,
                                                           p_datetime_until IN lecture.DATETIME%TYPE,

@@ -36,7 +36,10 @@ public class ScheduleController {
 
     @GetMapping("/showSchedule")
     public String showSchedule(ScheduleRequestDTO scheduleRequestDTO, Model model) {
+        Person person = personService.findPerson(scheduleRequestDTO);
+
         model.addAttribute("schedule", scheduleService.getSchedule(scheduleRequestDTO));
+        model.addAttribute("searchedPerson", person);
         return "schedule";
     }
 

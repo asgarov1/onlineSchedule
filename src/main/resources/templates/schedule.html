@@ -3,7 +3,7 @@
 <div class="container" th:fragment="main">
 
     <div class="jumbotron">
-        <h1>Schedule</h1>
+        <h1 th:text="${searchedPerson} ? |Schedule for ${searchedPerson.getFullName()}| : |Schedule|">Schedule</h1>
         <hr/>
         <form method="get" th:action="@{/schedule/showSchedule}" th:object="${scheduleRequestDTO}">
 

@@ -1,3 +1,5 @@
+ALTER SESSION SET CURRENT_SCHEMA = GUI;
+
 ---------
 --- VIEWS
 ---------
