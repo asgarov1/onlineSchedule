@@ -136,4 +136,9 @@ public class LectureDao extends AbstractDao<Long, Lecture> {
         lectureView.setCourseName(resultSet.getString("course_name"));
         return lectureView;
     }
+
+    @Override
+    protected Long mapToKey(Object key) {
+        return ((BigDecimal)(key)).longValue();
+    }
 }

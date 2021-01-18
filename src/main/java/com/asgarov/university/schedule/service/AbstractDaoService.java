@@ -15,7 +15,7 @@ public abstract class AbstractDaoService<K, T> {
     }
 
     @Loggable
-    public Long create(T object) {
+    public K create(T object) {
         return abstractDao.create(object);
     }
 

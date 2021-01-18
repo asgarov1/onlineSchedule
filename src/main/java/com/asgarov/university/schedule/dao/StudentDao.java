@@ -3,6 +3,7 @@ package com.asgarov.university.schedule.dao;
 
 import com.asgarov.university.schedule.dao.exception.DaoException;
 import com.asgarov.university.schedule.domain.CourseStudent;
+import com.asgarov.university.schedule.domain.Person;
 import com.asgarov.university.schedule.domain.Student;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -19,24 +20,28 @@ import java.util.Map;
 public class StudentDao extends AbstractDao<Long, Student> {
 
     private final CourseStudentDao courseStudentDao;
-    private final RoleDao roleDao;
     private final DegreeDao degreeDao;
+    private final PersonDao personDao;
 
-    public StudentDao(CourseStudentDao courseStudentDao, RoleDao roleDao, DegreeDao degreeDao) {
+    public StudentDao(CourseStudentDao courseStudentDao, DegreeDao degreeDao, PersonDao personDao) {
         this.courseStudentDao = courseStudentDao;
-        this.roleDao = roleDao;
         this.degreeDao = degreeDao;
+        this.personDao = personDao;
     }
 
     @Override
     protected Student rowMapper(final ResultSet resultSet, final int rowNum) throws SQLException {
         Student student = new Student();
         student.setId(resultSet.getLong("id"));
-        student.setEmail(resultSet.getString("email"));
-        student.setFirstName(resultSet.getString("firstName"));
-        student.setLastName(resultSet.getString("lastName"));
-        student.setPassword(resultSet.getString("password"));
-        student.setRole(roleDao.findById(resultSet.getLong("role_id")));
+
+        Person person = personDao.findById(resultSet.getString("person_id"));
+
+        student.setEmail(person.getEmail());
+        student.setFirstName(person.getFirstName());
+        student.setLastName(person.getLastName());
+        student.setPassword(person.getPassword());
+        student.setRole(person.getRole());
+
         student.setDegree(degreeDao.findById(resultSet.getLong("degree_id")));
         return student;
     }
@@ -44,6 +49,7 @@ public class StudentDao extends AbstractDao<Long, Student> {
     @Override
     public void deleteById(final Long id) throws DaoException {
         courseStudentDao.deleteByStudentId(id);
+        personDao.deleteById(findById(id).getEmail());
         super.deleteById(id);
     }
 
@@ -55,13 +61,21 @@ public class StudentDao extends AbstractDao<Long, Student> {
     }
 
     @Override
+    public Long create(Student student) {
+        personDao.create(student);
+        return super.create(student);
+    }
+
+    @Override
+    public void update(Student student) {
+        personDao.update(student);
+        super.update(student);
+    }
+
+    @Override
     protected SqlParameterSource getParameterMap(Student student) {
         return new MapSqlParameterSource()
-                .addValue("p_email", student.getEmail())
-                .addValue("p_firstname", student.getFirstName())
-                .addValue("p_lastname", student.getLastName())
-                .addValue("p_password", student.getPassword())
-                .addValue("p_role", student.getRole().ordinal())
+                .addValue("p_person_id", student.getEmail())
                 .addValue("p_degree", student.getDegree().ordinal())
                 .addValue("p_id", student.getId());
     }
@@ -94,15 +108,22 @@ public class StudentDao extends AbstractDao<Long, Student> {
     @Override
     protected Student instantiateFromMap(Map<String, Object> result) {
         Student student = new Student();
-
         student.setId((Long) result.get("o_id"));
-        student.setEmail((String) result.get("o_email"));
-        student.setFirstName((String) result.get("o_firstname"));
-        student.setLastName((String) result.get("o_lastname"));
-        student.setPassword((String) result.get("o_password"));
-        student.setRole(roleDao.findById(((BigDecimal) result.get("o_role")).longValue()));
+
+        Person person = personDao.findById((String) result.get("o_person_id"));
+        student.setEmail(person.getEmail());
+        student.setFirstName(person.getFirstName());
+        student.setLastName(person.getLastName());
+        student.setPassword(person.getPassword());
+        student.setRole(person.getRole());
+
         student.setDegree(degreeDao.findById(((BigDecimal) result.get("o_degree")).longValue()));
 
         return student;
+    }
+
+    @Override
+    protected Long mapToKey(Object key) {
+        return ((BigDecimal) (key)).longValue();
     }
 }

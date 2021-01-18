@@ -1,6 +1,8 @@
 package com.asgarov.university.schedule.dao;
 
 
+import com.asgarov.university.schedule.dao.exception.DaoException;
+import com.asgarov.university.schedule.domain.Person;
 import com.asgarov.university.schedule.domain.Professor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -14,32 +16,54 @@ import java.util.Map;
 @Repository
 public class ProfessorDao extends AbstractDao<Long, Professor> {
 
-    private final RoleDao roleDao;
+    private final PersonDao personDao;
 
-    public ProfessorDao(RoleDao roleDao) {
-        this.roleDao = roleDao;
+    public ProfessorDao(PersonDao personDao) {
+        this.personDao = personDao;
+    }
+
+    @Override
+    protected Long mapToKey(Object key) {
+        return ((BigDecimal) (key)).longValue();
     }
 
     @Override
     protected Professor rowMapper(final ResultSet resultSet, final int rowNum) throws SQLException {
         Professor professor = new Professor();
         professor.setId(resultSet.getLong("id"));
-        professor.setEmail(resultSet.getString("email"));
-        professor.setFirstName(resultSet.getString("firstName"));
-        professor.setLastName(resultSet.getString("lastName"));
-        professor.setPassword(resultSet.getString("password"));
-        professor.setRole(roleDao.findById(resultSet.getLong("role_id")));
+
+        Person person = personDao.findById(resultSet.getString("person_id"));
+
+        professor.setEmail(person.getEmail());
+        professor.setFirstName(person.getFirstName());
+        professor.setLastName(person.getLastName());
+        professor.setPassword(person.getPassword());
+        professor.setRole(person.getRole());
         return professor;
+    }
+
+    @Override
+    public Long create(Professor professor) {
+        personDao.create(professor);
+        return super.create(professor);
+    }
+
+    @Override
+    public void update(Professor professor) {
+        personDao.update(professor);
+        super.update(professor);
+    }
+
+    @Override
+    public void deleteById(Long id) throws DaoException {
+        personDao.deleteById(findById(id).getEmail());
+        super.deleteById(id);
     }
 
     @Override
     protected SqlParameterSource getParameterMap(Professor professor) {
         return new MapSqlParameterSource()
-                .addValue("p_email", professor.getEmail())
-                .addValue("p_firstname", professor.getFirstName())
-                .addValue("p_lastname", professor.getLastName())
-                .addValue("p_password", professor.getPassword())
-                .addValue("p_role", professor.getRole().ordinal())
+                .addValue("p_person_id", professor.getEmail())
                 .addValue("p_id", professor.getId());
     }
 
@@ -73,11 +97,14 @@ public class ProfessorDao extends AbstractDao<Long, Professor> {
         Professor professor = new Professor();
 
         professor.setId((Long) result.get("o_id"));
-        professor.setEmail((String) result.get("o_email"));
-        professor.setFirstName((String) result.get("o_firstname"));
-        professor.setLastName((String) result.get("o_lastname"));
-        professor.setPassword((String) result.get("o_password"));
-        professor.setRole(roleDao.findById(((BigDecimal) result.get("o_role")).longValue()));
+
+        Person person = personDao.findById((String) result.get("o_person_id"));
+
+        professor.setEmail(person.getEmail());
+        professor.setFirstName(person.getFirstName());
+        professor.setLastName(person.getLastName());
+        professor.setPassword(person.getPassword());
+        professor.setRole(person.getRole());
 
         return professor;
     }

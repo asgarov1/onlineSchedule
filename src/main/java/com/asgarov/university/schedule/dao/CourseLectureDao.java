@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -83,5 +84,10 @@ public class CourseLectureDao extends AbstractWithDeleteByCourseDao<Long, Course
         courseLecture.setLectureId((Long) result.get("o_lecture_id"));
 
         return courseLecture;
+    }
+
+    @Override
+    protected Long mapToKey(Object key) {
+        return ((BigDecimal)(key)).longValue();
     }
 }

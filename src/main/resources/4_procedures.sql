@@ -4,6 +4,7 @@ ALTER SESSION SET CURRENT_SCHEMA = GUI;
 --CREATE PROCEDURES
 -------------------
 
+
 CREATE OR REPLACE PROCEDURE create_role(p_name IN role.NAME%TYPE,
                                         p_id IN role.ID%TYPE,
                                         o_id OUT role.ID%TYPE)
@@ -70,31 +71,37 @@ BEGIN
 end;
 /
 
-CREATE OR REPLACE PROCEDURE create_professor(p_email IN professor.email%TYPE,
-                                             p_firstname IN professor.firstName%TYPE,
-                                             p_lastname IN professor.lastName%TYPE,
-                                             p_password IN professor.password%TYPE,
-                                             p_role IN professor.role_id%TYPE,
+CREATE OR REPLACE PROCEDURE create_person(p_email IN person.email%TYPE,
+                                          p_firstName IN person.firstName%TYPE,
+                                          p_lastName IN person.lastName%TYPE,
+                                          p_password IN person.password%TYPE,
+                                          p_role_id IN person.role_id%TYPE,
+                                          o_id OUT person.email%TYPE)
+AS
+BEGIN
+    INSERT INTO person (email, firstName, lastName, password, role_id)
+    VALUES (p_email, p_firstName, p_lastName, p_password, p_role_id)
+    returning email into o_id;
+end;
+/
+
+CREATE OR REPLACE PROCEDURE create_professor(p_person_id IN person.email%TYPE,
                                              o_id OUT professor.id%TYPE)
 AS
 BEGIN
-    INSERT INTO professor (email, firstName, lastName, password, role_id)
-    VALUES (p_email, p_firstname, p_lastname, p_password, p_role)
+    INSERT INTO professor (person_id)
+    VALUES (p_person_id)
     returning id into o_id;
 end;
 /
 
-CREATE OR REPLACE PROCEDURE create_student(p_email IN student.email%TYPE,
-                                           p_firstname IN student.firstName%TYPE,
-                                           p_lastname IN student.lastName%TYPE,
-                                           p_password IN student.password%TYPE,
-                                           p_role IN student.role_id%TYPE,
+CREATE OR REPLACE PROCEDURE create_student(p_person_id IN person.email%TYPE,
                                            p_degree IN student.degree_id%TYPE,
                                            o_id OUT student.id%TYPE)
 AS
 BEGIN
-    INSERT INTO student (email, firstName, lastName, password, role_id, degree_id)
-    VALUES (p_email, p_firstname, p_lastname, p_password, p_role, p_degree)
+    INSERT INTO student (person_id, degree_id)
+    VALUES (p_person_id, p_degree)
     returning id into o_id;
 end;
 /
@@ -181,40 +188,40 @@ BEGIN
 end;
 /
 
-CREATE OR REPLACE PROCEDURE update_professor(p_email IN professor.email%TYPE,
-                                             p_firstname IN professor.firstName%TYPE,
-                                             p_lastname IN professor.lastName%TYPE,
-                                             p_password IN professor.password%TYPE,
-                                             p_role IN professor.role_id%TYPE,
+CREATE OR REPLACE PROCEDURE update_person(p_firstname IN person.firstName%TYPE,
+                                          p_lastname IN person.lastName%TYPE,
+                                          p_password IN person.password%TYPE,
+                                          p_role_id IN person.role_id%TYPE,
+                                          p_id IN person.email%TYPE)
+AS
+BEGIN
+    UPDATE person
+    SET firstName = p_firstname,
+        lastName  = p_lastname,
+        password  = p_password,
+        role_id = p_role_id
+    where email = p_id;
+end;
+/
+
+CREATE OR REPLACE PROCEDURE update_professor(p_person_id IN person.email%TYPE,
                                              p_id IN professor.id%TYPE)
 AS
 BEGIN
     UPDATE professor
-    SET email     = p_email,
-        firstName = p_firstname,
-        lastName  = p_lastname,
-        password  = p_password,
-        role_id      = p_role
+    SET person_id = p_person_id
     where id = p_id;
 end;
 /
 
-CREATE OR REPLACE PROCEDURE update_student(p_email IN student.email%TYPE,
-                                           p_firstname IN student.firstName%TYPE,
-                                           p_lastname IN student.lastName%TYPE,
-                                           p_password IN student.password%TYPE,
-                                           p_role IN student.role_id%TYPE,
+CREATE OR REPLACE PROCEDURE update_student(p_person_id IN person.email%TYPE,
                                            p_degree IN student.degree_id%TYPE,
                                            p_id IN student.id%TYPE)
 AS
 BEGIN
     UPDATE student
-    SET email     = p_email,
-        firstName = p_firstname,
-        lastName  = p_lastname,
-        password  = p_password,
-        role_id      = p_role,
-        degree_id    = p_degree
+    SET person_id = p_person_id,
+        degree_id = p_degree
     where id = p_id;
 end;
 /
@@ -232,7 +239,6 @@ end;
 ---------------------
 --- DELETE PROCEDURES
 ---------------------
-
 CREATE OR REPLACE PROCEDURE delete_role(p_id IN role.ID%TYPE)
 AS
 BEGIN
@@ -272,6 +278,13 @@ CREATE OR REPLACE PROCEDURE delete_lecture(p_id IN lecture.id%TYPE)
 AS
 BEGIN
     DELETE lecture where id = p_id;
+end;
+/
+
+CREATE OR REPLACE PROCEDURE delete_person(p_id IN person.email%TYPE)
+AS
+BEGIN
+    DELETE person where email = p_id;
 end;
 /
 
@@ -385,6 +398,14 @@ BEGIN
 END;
 /
 
+CREATE OR REPLACE PROCEDURE find_all_persons(o_cursor OUT SYS_REFCURSOR)
+AS
+BEGIN
+    OPEN o_cursor FOR
+        SELECT * FROM person;
+END;
+/
+
 CREATE OR REPLACE PROCEDURE find_all_professors(o_cursor OUT SYS_REFCURSOR)
 AS
 BEGIN
@@ -415,7 +436,6 @@ END;
 --- Find by Id Procedures
 -------------------------
 
-CREATE OR REPLACE PROCEDURE find_by_id_role(p_id IN role.ID%TYPE,
 CREATE OR REPLACE PROCEDURE find_by_id_role(p_id IN role.ID%TYPE,
                                             o_name OUT role.NAME%TYPE)
 AS
@@ -488,16 +508,27 @@ END;
 /
 
 
-CREATE OR REPLACE PROCEDURE find_by_id_professor(p_id IN professor.ID%TYPE,
-                                                 o_email OUT professor.email%TYPE,
-                                                 o_firstname OUT professor.firstName%TYPE,
-                                                 o_lastname OUT professor.lastName%TYPE,
-                                                 o_password OUT professor.password%TYPE,
-                                                 o_role OUT professor.role_id%TYPE)
+CREATE OR REPLACE PROCEDURE find_by_id_person(p_id IN person.email%TYPE,
+                                              o_email OUT person.email%TYPE,
+                                              o_firstname OUT person.firstName%TYPE,
+                                              o_lastname OUT person.lastName%TYPE,
+                                              o_password OUT person.password%TYPE,
+                                              o_role_id OUT person.role_id%TYPE)
 AS
 BEGIN
     SELECT email, firstName, lastName, password, role_id
-    INTO o_email, o_firstname, o_lastname, o_password, o_role
+    INTO o_email, o_firstname, o_lastname, o_password, o_role_id
+    from person
+    WHERE email = p_id;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE find_by_id_professor(p_id IN professor.id%TYPE,
+                                                 o_person_id OUT professor.person_id%TYPE)
+AS
+BEGIN
+    SELECT person_id
+    INTO o_person_id
     from professor
     WHERE ID = p_id;
 END;
@@ -516,18 +547,14 @@ END;
 /
 
 
-CREATE OR REPLACE PROCEDURE find_by_id_student(p_id IN student.ID%TYPE,
-                                               o_email OUT student.email%TYPE,
-                                               o_firstname OUT student.firstName%TYPE,
-                                               o_lastname OUT student.lastName%TYPE,
-                                               o_password OUT student.password%TYPE,
-                                               o_role OUT student.role_id%TYPE,
+CREATE OR REPLACE PROCEDURE find_by_id_student(p_id IN student.id%TYPE,
+                                               o_person_id OUT student.person_id%TYPE,
                                                o_degree OUT student.degree_id%TYPE
 )
 AS
 BEGIN
-    SELECT email, firstName, lastName, password, role_id, degree_id
-    INTO o_email, o_firstname, o_lastname, o_password, o_role, o_degree
+    SELECT person_id, degree_id
+    INTO o_person_id, o_degree
     from student
     WHERE ID = p_id;
 END;

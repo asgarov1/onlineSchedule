@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -90,5 +91,10 @@ public class CourseStudentDao extends AbstractWithDeleteByCourseDao<Long, Course
                 .withProcedureName("unregister_student")
                 .execute(new MapSqlParameterSource().addValue("p_course_id", course_id)
                         .addValue("p_student_id", studentId));
+    }
+
+    @Override
+    protected Long mapToKey(Object key) {
+        return ((BigDecimal)(key)).longValue();
     }
 }

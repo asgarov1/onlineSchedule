@@ -98,4 +98,9 @@ public class CourseDao extends AbstractDao<Long, Course> {
         course.setRegisteredStudents(studentDao.findAllStudentsByCourseId(course.getId()));
         return course;
     }
+
+    @Override
+    protected Long mapToKey(Object key) {
+        return ((BigDecimal)(key)).longValue();
+    }
 }

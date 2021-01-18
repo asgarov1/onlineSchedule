@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
@@ -58,5 +59,10 @@ public class RoomDao extends AbstractDao<Long, Room> {
         room.setId((Long) result.get("o_id"));
         room.setName((String) result.get("o_name"));
         return room;
+    }
+
+    @Override
+    protected Long mapToKey(Object key) {
+        return ((BigDecimal)(key)).longValue();
     }
 }

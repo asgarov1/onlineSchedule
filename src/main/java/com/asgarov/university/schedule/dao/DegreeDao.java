@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
@@ -54,5 +55,10 @@ public class DegreeDao extends AbstractDao<Long, Student.Degree> {
     @Override
     protected Student.Degree instantiateFromMap(Map<String, Object> result) {
         return Student.Degree.valueOf((String) result.get("o_name"));
+    }
+
+    @Override
+    protected Long mapToKey(Object key) {
+        return ((BigDecimal)(key)).longValue();
     }
 }

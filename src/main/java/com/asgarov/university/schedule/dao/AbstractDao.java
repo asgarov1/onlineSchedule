@@ -37,12 +37,15 @@ public abstract class AbstractDao<K, T> {
 
     protected abstract T instantiateFromMap(Map<String, Object> result);
 
-    public Long create(T object) {
+    public K create(T object) {
         Map<String, Object> execute = new SimpleJdbcCall(getJdbcTemplate())
                 .withProcedureName(getCreateProcedureName())
                 .execute(getParameterMap(object));
-        return ((BigDecimal) execute.get("o_id")).longValue();
+        Object key = execute.get("o_id");
+        return mapToKey(key);
     }
+
+    protected abstract K mapToKey(Object key);
 
     public T findById(K id) {
         Map<String, Object> result = new SimpleJdbcCall(jdbcTemplate)

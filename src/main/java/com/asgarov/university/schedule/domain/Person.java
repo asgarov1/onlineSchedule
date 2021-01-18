@@ -2,7 +2,7 @@ package com.asgarov.university.schedule.domain;
 
 import java.util.Objects;
 
-public abstract class Person {
+public class Person {
 
     Long id;
     Role role;
